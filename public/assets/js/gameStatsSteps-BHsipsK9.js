@@ -1,1 +1,1 @@
-const s="/assets/png/gameStatsSteps-CB0tYzSZ.png";export{s as _};
+const s="/dmfirst/assets/png/gameStatsSteps-CB0tYzSZ.png";export{s as _};

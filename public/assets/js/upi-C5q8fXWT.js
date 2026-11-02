@@ -1,1 +1,1 @@
-const s="/assets/png/upi-BaF6SSak.png";export{s as _};
+const s="/dmfirst/assets/png/upi-BaF6SSak.png";export{s as _};
