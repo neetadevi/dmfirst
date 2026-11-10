@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DmFirst Admin Portal - Master Management & Controls</title>
+  <title>Rai08 Admin Portal - Master Management & Controls</title>
   <link rel="icon" type="image/png" href="../icon-192x192.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -598,8 +598,8 @@
   <!-- 1. ADMIN LOGIN VIEW -->
   <div id="loginScreen" class="login-container">
     <div class="login-card">
-      <img src="../icon-192x192.png" alt="DmFirst Logo" class="login-logo">
-      <h1 class="login-title">DmFirst Admin</h1>
+      <img src="../assets/png/rai08-logo.svg" alt="Rai08 Logo" class="login-logo" style="width: 150px; height: auto; box-shadow: none; border-radius: 0;">
+      <h1 class="login-title">Rai08 Admin</h1>
       <p class="login-subtitle">Master Control & Operation Portal</p>
 
       <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
@@ -643,9 +643,9 @@
     <!-- SIDEBAR -->
     <aside class="sidebar">
       <div class="sidebar-header">
-        <img src="../icon-192x192.png" alt="Logo">
+        <img src="../assets/png/rai08-logo.svg" alt="Rai08" style="width: 48px; height: auto;">
         <div>
-          <div class="brand-title-sidebar">DmFirst</div>
+          <div class="brand-title-sidebar">Rai08</div>
           <span class="brand-badge">ADMIN v2.0</span>
         </div>
       </div>
@@ -673,6 +673,12 @@
           <div class="sidebar-link" onclick="switchTab('tab-withdrawals', this)">
             <i class="fa-solid fa-wallet"></i>
             <span>All Withdrawals</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-qr-settings', this)">
+            <i class="fa-solid fa-qrcode"></i>
+            <span>Deposit QR & UPI Settings</span>
           </div>
         </li>
         <li class="sidebar-item">
@@ -945,6 +951,96 @@
           </div>
         </div>
 
+        <!-- QR CODE & UPI SETTINGS TAB -->
+        <div id="tab-qr-settings" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-qrcode" style="color: var(--primary-gold);"></i>
+                <span>Deposit QR Code & UPI Payment Settings</span>
+              </div>
+              <button class="btn-gold" onclick="saveAdminQrSettings()">
+                <i class="fa-solid fa-floppy-disk"></i> Save & Apply All
+              </button>
+            </div>
+
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+              Manage the deposit QR code, UPI ID, and Payee Name displayed on the website and player deposit screens. Changes update immediately for all players.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+              <!-- 1. Live Preview Card -->
+              <div style="background: var(--bg-card-inner); padding: 24px; border-radius: 14px; border: 1px solid var(--border-color); text-align: center;">
+                <h4 style="color: var(--primary-gold); margin-bottom: 16px; font-size: 16px;">
+                  <i class="fa-solid fa-eye"></i> Live Deposit QR Preview
+                </h4>
+                <div style="background: #ffffff; padding: 14px; border-radius: 12px; display: inline-block; box-shadow: 0 8px 30px rgba(0,0,0,0.5); max-width: 260px;">
+                  <img id="adminLiveQrImg" src="../imgs/deposit_qr.jpg" alt="Deposit QR Code" style="width: 100%; height: auto; border-radius: 8px; display: block;">
+                </div>
+                <div style="margin-top: 16px;">
+                  <span style="font-size: 13px; color: var(--text-muted);">Payee Name:</span>
+                  <strong id="adminLivePayee" style="color: var(--text-white); margin-left: 6px;">UTSAV ROY</strong>
+                </div>
+                <div style="margin-top: 8px;">
+                  <span style="font-size: 13px; color: var(--text-muted);">UPI ID:</span>
+                  <code id="adminLiveUpi" style="color: var(--success); background: #181d26; padding: 4px 10px; border-radius: 6px; margin-left: 6px; font-weight: 700; word-break: break-all;">BHARATPE210J0S6F9V05005@unitype</code>
+                </div>
+              </div>
+
+              <!-- 2. Edit Settings Card -->
+              <div style="background: var(--bg-card-inner); padding: 24px; border-radius: 14px; border: 1px solid var(--border-color);">
+                <h4 style="color: var(--primary-gold); margin-bottom: 16px; font-size: 16px;">
+                  <i class="fa-solid fa-pen-to-square"></i> Change QR & Payment Details
+                </h4>
+
+                <!-- A: File Upload -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Upload New QR Code Image (from Phone / PC)
+                  </label>
+                  <input type="file" id="adminQrFileInput" accept="image/*" class="input-field" onchange="handleAdminQrFileUpload(event)" style="padding: 10px; background: #141a24;">
+                  <small style="color: var(--text-muted); font-size: 12px; display: block; margin-top: 4px;">
+                    Select any BharatPe, PhonePe, Paytm, or Google Pay QR code screenshot from your files.
+                  </small>
+                </div>
+
+                <!-- B: URL Input -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fa-solid fa-link"></i> Or Paste Image URL
+                  </label>
+                  <input type="text" id="adminQrUrlInput" class="input-field" placeholder="https://example.com/qr.jpg" oninput="handleAdminQrUrlInput(this.value)">
+                </div>
+
+                <!-- Payee Name Input -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fa-solid fa-user-tag"></i> Payee Name (BharatPe / UPI)
+                  </label>
+                  <input type="text" id="adminPayeeNameInput" class="input-field" value="UTSAV ROY" placeholder="e.g. UTSAV ROY">
+                </div>
+
+                <!-- UPI ID Input -->
+                <div class="input-group">
+                  <label class="input-label">
+                    <i class="fa-solid fa-wallet"></i> UPI ID (VPA)
+                  </label>
+                  <input type="text" id="adminUpiIdInput" class="input-field" value="BHARATPE210J0S6F9V05005@unitype" placeholder="e.g. BHARATPE210J0S6F9V05005@unitype">
+                </div>
+
+                <div style="display: flex; gap: 12px; margin-top: 24px;">
+                  <button class="btn-gold" style="flex: 1; padding: 12px;" onclick="saveAdminQrSettings()">
+                    <i class="fa-solid fa-check"></i> Save & Apply
+                  </button>
+                  <button class="btn-outline" style="padding: 12px 18px;" onclick="resetAdminQrToDefault()">
+                    <i class="fa-solid fa-rotate-left"></i> Reset to BharatPe Default
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- SETTINGS TAB -->
         <div id="tab-settings" class="tab-content" style="display: none;">
           <div class="section-card">
@@ -1098,6 +1194,7 @@
         document.getElementById('loginScreen').style.display = 'none';
         document.getElementById('dashboardLayout').style.display = 'flex';
         loadDashboardStats();
+        loadAdminQrSettings();
       } else {
         document.getElementById('loginScreen').style.display = 'flex';
         document.getElementById('dashboardLayout').style.display = 'none';
@@ -1144,6 +1241,7 @@
         'tab-users': 'All Users Login & Sign Up Details',
         'tab-deposits': 'All Deposits & Recharges',
         'tab-withdrawals': 'All Player Withdrawals',
+        'tab-qr-settings': 'Deposit QR Code & UPI Settings',
         'tab-games': 'WinGo Game Control & RTP',
         'tab-settings': 'Supabase Database & System Settings'
       };
@@ -1152,7 +1250,75 @@
       if (tabId === 'tab-users') renderUsersTable();
       if (tabId === 'tab-deposits') renderDepositsTable();
       if (tabId === 'tab-withdrawals') renderWithdrawalsTable();
+      if (tabId === 'tab-qr-settings') loadAdminQrSettings();
       if (tabId === 'tab-overview') loadDashboardStats();
+    }
+
+    // --- DEPOSIT QR & UPI SETTINGS MANAGEMENT ---
+    let pendingQrBase64 = null;
+
+    function loadAdminQrSettings() {
+      const customQr = localStorage.getItem('dmfirst_custom_qr') || '../imgs/deposit_qr.jpg';
+      const customUpi = localStorage.getItem('dmfirst_custom_upi') || 'BHARATPE210J0S6F9V05005@unitype';
+      const payeeName = localStorage.getItem('dmfirst_payee_name') || 'UTSAV ROY';
+
+      const img = document.getElementById('adminLiveQrImg');
+      if (img) img.src = customQr;
+      const payee = document.getElementById('adminLivePayee');
+      if (payee) payee.innerText = payeeName;
+      const upi = document.getElementById('adminLiveUpi');
+      if (upi) upi.innerText = customUpi;
+
+      const upiInput = document.getElementById('adminUpiIdInput');
+      if (upiInput) upiInput.value = customUpi;
+      const payeeInput = document.getElementById('adminPayeeNameInput');
+      if (payeeInput) payeeInput.value = payeeName;
+    }
+
+    function handleAdminQrFileUpload(e) {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        pendingQrBase64 = evt.target.result;
+        const img = document.getElementById('adminLiveQrImg');
+        if (img) img.src = pendingQrBase64;
+        showToast('New QR image preview loaded! Click "Save & Apply" to make it live.', 'info');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleAdminQrUrlInput(url) {
+      if (url && (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('data:image'))) {
+        pendingQrBase64 = url.trim();
+        const img = document.getElementById('adminLiveQrImg');
+        if (img) img.src = pendingQrBase64;
+      }
+    }
+
+    function saveAdminQrSettings() {
+      const upi = document.getElementById('adminUpiIdInput').value.trim() || 'BHARATPE210J0S6F9V05005@unitype';
+      const payee = document.getElementById('adminPayeeNameInput').value.trim() || 'UTSAV ROY';
+
+      if (pendingQrBase64) {
+        localStorage.setItem('dmfirst_custom_qr', pendingQrBase64);
+      }
+      localStorage.setItem('dmfirst_custom_upi', upi);
+      localStorage.setItem('dmfirst_payee_name', payee);
+
+      loadAdminQrSettings();
+      showToast('Deposit QR Code & UPI settings saved! Updated across website.', 'success');
+    }
+
+    function resetAdminQrToDefault() {
+      localStorage.removeItem('dmfirst_custom_qr');
+      localStorage.setItem('dmfirst_custom_upi', 'BHARATPE210J0S6F9V05005@unitype');
+      localStorage.setItem('dmfirst_payee_name', 'UTSAV ROY');
+      pendingQrBase64 = null;
+      document.getElementById('adminQrFileInput').value = '';
+      document.getElementById('adminQrUrlInput').value = '';
+      loadAdminQrSettings();
+      showToast('Reset to original BharatPe QR Code (UTSAV ROY) successfully!', 'success');
     }
 
     function loadDashboardStats() {

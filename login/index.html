@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DmFirst - Login & Sign Up</title>
+  <title>Rai08 - Login & Sign Up</title>
   <link rel="icon" type="image/png" href="../icon-192x192.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -367,6 +367,93 @@
       font-size: 18px;
     }
 
+    /* Deposit QR & Amount Chips Styling */
+    .qr-card-box {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 12px;
+      text-align: center;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    }
+
+    .qr-card-img {
+      max-width: 220px;
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .upi-display-box {
+      background: #f1f4f9;
+      border-radius: 8px;
+      padding: 8px 12px;
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .upi-display-text {
+      color: #111;
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 12px;
+      word-break: break-all;
+    }
+
+    .btn-copy-upi {
+      background: #f5a623;
+      color: #000;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .btn-copy-upi:hover {
+      opacity: 0.9;
+    }
+
+    .amount-chips {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .amount-chip {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      color: var(--text-white);
+      padding: 9px 4px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .amount-chip:hover {
+      border-color: var(--primary-gold);
+      color: var(--primary-gold);
+    }
+
+    .amount-chip.active {
+      background: var(--gold-gradient);
+      color: #000;
+      border-color: var(--primary-gold);
+      box-shadow: 0 4px 12px rgba(245, 166, 35, 0.3);
+    }
+
     /* Footer Navigation */
     .auth-footer {
       margin-top: 24px;
@@ -443,8 +530,8 @@
   <div class="auth-wrapper">
     <!-- Brand -->
     <div class="brand-header">
-      <img src="../icon-192x192.png" alt="DmFirst Logo" class="brand-logo">
-      <h1 class="brand-title">DmFirst Official</h1>
+      <img src="../assets/png/rai08-logo.svg" alt="Rai08 Logo" class="brand-logo" style="width: 170px; height: auto; box-shadow: none;">
+      <h1 class="brand-title">Rai08 Official</h1>
       <p class="brand-subtitle">Entertainment & Rewards Platform</p>
     </div>
 
@@ -580,7 +667,7 @@
     <div class="auth-footer">
       <div>
         <a href="../">
-          <i class="fa-solid fa-arrow-left"></i> Return to DmFirst Website
+          <i class="fa-solid fa-arrow-left"></i> Return to Rai08 Website
         </a>
       </div>
       <div>
@@ -593,30 +680,66 @@
 
   <!-- DEPOSIT MODAL -->
   <div id="depositModal" class="modal-backdrop">
-    <div class="modal-box">
+    <div class="modal-box" style="max-height: 92vh; overflow-y: auto;">
       <div class="modal-header">
-        <h3 class="modal-title"><i class="fa-solid fa-plus-circle" style="color: var(--success);"></i> Add Deposit / Recharge</h3>
+        <h3 class="modal-title"><i class="fa-solid fa-qrcode" style="color: var(--primary-gold);"></i> Scan & Pay Deposit</h3>
         <span class="modal-close" onclick="closeDepositModal()">&times;</span>
       </div>
-      <div class="form-group">
-        <label class="form-label">Amount (₹)</label>
-        <input type="number" id="depositAmount" class="form-input" placeholder="e.g. 500" value="500" min="100">
+
+      <!-- BharatPe QR Box -->
+      <div class="qr-card-box">
+        <img id="depositModalQrImg" src="../imgs/deposit_qr.jpg" alt="BharatPe QR Code" class="qr-card-img">
+        <div style="margin-top: 10px; color: #222; font-weight: 800; font-size: 15px;">
+          Payee: <span id="depositModalPayee">UTSAV ROY</span>
+        </div>
+        <div class="upi-display-box">
+          <span class="upi-display-text" id="depositModalUpiText">BHARATPE210J0S6F9V05005@unitype</span>
+          <button type="button" class="btn-copy-upi" onclick="copyDepositUpi()">
+            <i class="fa-solid fa-copy"></i> Copy UPI
+          </button>
+        </div>
+        <div style="font-size: 11px; color: #555; margin-top: 8px;">
+          <i class="fa-solid fa-shield-halved" style="color: #00c087;"></i> Pay with PhonePe, Paytm, Google Pay, or BharatPe
+        </div>
       </div>
+
+      <!-- Quick Amount Selection (100 - 10,000) -->
+      <div class="form-group">
+        <label class="form-label">Select Deposit Amount (₹)</label>
+        <div class="amount-chips">
+          <button type="button" class="amount-chip active" onclick="selectDepositChip(100, this)">₹100</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(200, this)">₹200</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(500, this)">₹500</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(1000, this)">₹1,000</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(2000, this)">₹2,000</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(5000, this)">₹5,000</button>
+          <button type="button" class="amount-chip" onclick="selectDepositChip(10000, this)">₹10,000</button>
+          <button type="button" class="amount-chip" onclick="selectCustomDeposit(this)">Custom</button>
+        </div>
+        <input type="number" id="depositAmount" class="form-input" placeholder="Amount in ₹" value="100" min="100">
+      </div>
+
       <div class="form-group">
         <label class="form-label">Payment Method</label>
         <select id="depositMethod" class="form-input" style="padding: 10px;">
-          <option value="UPI / PhonePe">UPI / PhonePe</option>
+          <option value="BharatPe UPI (UTSAV ROY)">BharatPe QR / UPI (UTSAV ROY)</option>
+          <option value="PhonePe">PhonePe</option>
           <option value="Google Pay">Google Pay</option>
-          <option value="Paytm QR">Paytm QR</option>
+          <option value="Paytm">Paytm QR</option>
           <option value="Bank Transfer">Bank Transfer / IMPS</option>
         </select>
       </div>
+
       <div class="form-group">
-        <label class="form-label">UTR / Transaction Reference ID</label>
-        <input type="text" id="depositUtr" class="form-input" placeholder="Enter 12-digit UTR number" required>
+        <label class="form-label">12-Digit UTR / Reference Number <span style="color: var(--danger);">*</span></label>
+        <input type="text" id="depositUtr" class="form-input" placeholder="Enter 12-digit UTR from payment receipt" required>
+        <small style="color: var(--text-muted); font-size: 11px; display: block; margin-top: 4px;">
+          Enter the 12-digit transaction number shown on your payment receipt.
+        </small>
       </div>
+
       <button class="btn-submit" onclick="submitDepositRequest()">
-        Submit Deposit to Admin
+        <i class="fa-solid fa-circle-check"></i> Submit Deposit to Admin
       </button>
     </div>
   </div>
@@ -724,6 +847,7 @@
 
       let success = false;
       let userData = null;
+      let sessionToken = null;
 
       // 1. Check local registered users list
       const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
@@ -738,6 +862,9 @@
           });
           if (data && data.user) {
             success = true;
+            if (data.session && data.session.access_token) {
+              sessionToken = data.session.access_token;
+            }
             userData = {
               id: localMatch ? localMatch.id : "DMF" + Math.floor(1000 + Math.random() * 9000),
               name: localMatch ? localMatch.name : (data.user.user_metadata?.full_name || email.split('@')[0]),
@@ -789,12 +916,30 @@
       btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
 
       if (success && userData) {
-        localStorage.setItem('dmfirst_logged_user', JSON.stringify(userData));
+        syncGlobalUserSession(userData, sessionToken);
         showToast(`Welcome back, ${userData.name || userData.email}!`, 'success');
         setTimeout(() => { checkUserState(); }, 600);
       } else {
         showToast('Invalid credentials! Please check your Email and Password.', 'danger');
       }
+    }
+
+    // Global session synchronization helper
+    function syncGlobalUserSession(userObj, token) {
+      const tok = token || ('sb_tok_' + (userObj.id || Date.now()));
+      localStorage.setItem('token', tok);
+      localStorage.setItem('tokenHeader', 'Bearer ');
+      const info = {
+        userId: userObj.id,
+        nickName: userObj.name || (userObj.email ? userObj.email.split('@')[0] : 'Player'),
+        username: userObj.name || (userObj.email ? userObj.email.split('@')[0] : 'Player'),
+        email: userObj.email || '',
+        amount: Number(userObj.balance || 100).toFixed(2),
+        money: Number(userObj.balance || 100),
+        userBalance: Number(userObj.balance || 100)
+      };
+      localStorage.setItem('userInfo', JSON.stringify(info));
+      localStorage.setItem('dmfirst_logged_user', JSON.stringify(userObj));
     }
 
     // SIGN UP: with Name + Gmail + Password
@@ -862,8 +1007,8 @@
         localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
       }
 
-      // Auto login
-      localStorage.setItem('dmfirst_logged_user', JSON.stringify(user));
+      // Auto login & session sync
+      syncGlobalUserSession(user, null);
 
       btn.disabled = false;
       btn.innerHTML = '<i class="fa-solid fa-user-check"></i> Complete Sign Up & Get ₹100';
@@ -873,6 +1018,9 @@
     }
 
     function handleUserLogout() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('tokenHeader');
+      localStorage.removeItem('userInfo');
       localStorage.removeItem('dmfirst_logged_user');
       showToast('Logged out successfully', 'info');
       checkUserState();
@@ -882,12 +1030,62 @@
       window.location.href = '../';
     }
 
-    // User Deposit Request
+    // User Deposit Request with BharatPe QR & Amount Chips
     function openDepositModal() {
+      const customQr = localStorage.getItem('dmfirst_custom_qr') || '../imgs/deposit_qr.jpg';
+      const customUpi = localStorage.getItem('dmfirst_custom_upi') || 'BHARATPE210J0S6F9V05005@unitype';
+      const payee = localStorage.getItem('dmfirst_payee_name') || 'UTSAV ROY';
+
+      const img = document.getElementById('depositModalQrImg');
+      if (img) img.src = customQr;
+      const upiText = document.getElementById('depositModalUpiText');
+      if (upiText) upiText.innerText = customUpi;
+      const payeeEl = document.getElementById('depositModalPayee');
+      if (payeeEl) payeeEl.innerText = payee;
+
       document.getElementById('depositModal').style.display = 'flex';
     }
+
     function closeDepositModal() {
       document.getElementById('depositModal').style.display = 'none';
+    }
+
+    function copyDepositUpi() {
+      const upi = (document.getElementById('depositModalUpiText').innerText || 'BHARATPE210J0S6F9V05005@unitype').trim();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(upi).then(() => {
+          showToast('UPI ID copied: ' + upi, 'success');
+        }).catch(() => fallbackCopy(upi));
+      } else {
+        fallbackCopy(upi);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      showToast('UPI ID copied to clipboard!', 'success');
+    }
+
+    function selectDepositChip(amount, btn) {
+      document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const input = document.getElementById('depositAmount');
+      if (input) input.value = amount;
+    }
+
+    function selectCustomDeposit(btn) {
+      document.querySelectorAll('.amount-chip').forEach(c => c.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      const input = document.getElementById('depositAmount');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
     }
     function submitDepositRequest() {
       const amt = Number(document.getElementById('depositAmount').value);

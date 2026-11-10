@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 168" width="448" height="168">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFF5C0"/>
+      <stop offset="25%" stop-color="#FFD700"/>
+      <stop offset="60%" stop-color="#FFA800"/>
+      <stop offset="100%" stop-color="#E67300"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="50%" stop-color="#FF2A4D"/>
+      <stop offset="100%" stop-color="#B80024"/>
+    </linearGradient>
+    <linearGradient id="crownGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFEAA7"/>
+      <stop offset="50%" stop-color="#FDCB6E"/>
+      <stop offset="100%" stop-color="#E17055"/>
+    </linearGradient>
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="3" stdDeviation="5" flood-color="#FFB300" flood-opacity="0.6"/>
+    </filter>
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Crown Emblem -->
+  <g transform="translate(24, 38)" filter="url(#goldGlow)">
+    <!-- Crown Base -->
+    <path d="M10 65 L4 25 L32 45 L50 15 L68 45 L96 25 L90 65 Z" fill="url(#crownGrad)" stroke="#FFEAA7" stroke-width="2" stroke-linejoin="round"/>
+    <!-- Crown Jewels -->
+    <circle cx="4" cy="22" r="5" fill="#FFFFFF"/>
+    <circle cx="50" cy="12" r="6" fill="#FFFFFF"/>
+    <circle cx="96" cy="22" r="5" fill="#FFFFFF"/>
+    <circle cx="28" cy="56" r="3.5" fill="url(#redGrad)"/>
+    <circle cx="50" cy="56" r="4" fill="#FFFFFF"/>
+    <circle cx="72" cy="56" r="3.5" fill="url(#redGrad)"/>
+    <!-- Crown Rim Band -->
+    <rect x="8" y="66" width="84" height="10" rx="5" fill="url(#goldGrad)" stroke="#FFEAA7" stroke-width="1.5"/>
+  </g>
+
+  <!-- Brand Typography -->
+  <!-- RAI (Gold) -->
+  <text x="145" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Montserrat', 'Impact', 'Segoe UI', Arial, sans-serif" font-size="82" font-weight="900" font-style="italic" fill="url(#goldGrad)" filter="url(#goldGlow)" letter-spacing="1">RAI</text>
+
+  <!-- 08 (Flame Red Gradient with Gold Stroke) -->
+  <text x="315" y="102" font-family="-apple-system, BlinkMacSystemFont, 'Montserrat', 'Impact', 'Segoe UI', Arial, sans-serif" font-size="82" font-weight="900" font-style="italic" fill="url(#redGrad)" stroke="#FFEAA7" stroke-width="2" filter="url(#softShadow)" letter-spacing="1">08</text>
+
+  <!-- OFFICIAL Subtitle -->
+  <g transform="translate(148, 118)">
+    <rect x="0" y="0" width="168" height="22" rx="11" fill="rgba(255, 168, 0, 0.18)" stroke="rgba(255, 215, 0, 0.5)" stroke-width="1"/>
+    <text x="84" y="15" text-anchor="middle" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif" font-size="12" font-weight="800" fill="#FFEAA7" letter-spacing="4">OFFICIAL</text>
+  </g>
+
+  <!-- Stars Decoration -->
+  <path d="M410 45 L413 53 L421 53 L415 58 L417 66 L410 61 L403 66 L405 58 L399 53 L407 53 Z" fill="url(#goldGrad)" transform="scale(0.8) translate(80, -10)"/>
+  <path d="M435 75 L437 81 L443 81 L438 85 L440 91 L435 87 L430 91 L432 85 L427 81 L433 81 Z" fill="url(#goldGrad)" transform="scale(0.6) translate(250, 20)"/>
+</svg>

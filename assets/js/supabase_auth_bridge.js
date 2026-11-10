@@ -337,6 +337,24 @@
       };
     }
 
+    // 7. RECHARGE & PAYMENT ENDPOINTS
+    if (ep === 'GetRechargeInfo' || ep === 'GetPayList' || ep === 'GetNowdayRechargeAmount') {
+      var customUpi = localStorage.getItem('dmfirst_custom_upi') || 'BHARATPE210J0S6F9V05005@unitype';
+      var payee = localStorage.getItem('dmfirst_payee_name') || 'UTSAV ROY';
+      return {
+        code: 0,
+        msg: 'success',
+        data: {
+          todayAmount: 0,
+          upiId: customUpi,
+          payeeName: payee,
+          qrUrl: localStorage.getItem('dmfirst_custom_qr') || '/dmfirst/imgs/deposit_qr.jpg',
+          minAmount: 100,
+          maxAmount: 100000
+        }
+      };
+    }
+
     // Generic safe response for any other backend query
     return {
       code: 0,
@@ -498,5 +516,81 @@
     return originalFetch.apply(this, arguments);
   };
 
-  console.log('[DmFirst] Supabase Auth Bridge initialized successfully.');
+  // --- AUTOMATIC SESSION SYNCHRONIZATION ---
+  (function initSessionSync() {
+    try {
+      var logged = getCurrentUser();
+      if (logged && !localStorage.getItem('token')) {
+        var tok = logged.token || ('sb_tok_' + logged.id);
+        localStorage.setItem('token', tok);
+        localStorage.setItem('tokenHeader', 'Bearer ');
+        var info = {
+          userId: logged.id,
+          nickName: logged.name || (logged.email ? logged.email.split('@')[0] : 'Player'),
+          username: logged.name || (logged.email ? logged.email.split('@')[0] : 'Player'),
+          email: logged.email || '',
+          amount: parseFloat(logged.balance || 100).toFixed(2),
+          money: parseFloat(logged.balance || 100),
+          userBalance: parseFloat(logged.balance || 100)
+        };
+        localStorage.setItem('userInfo', JSON.stringify(info));
+      }
+    } catch (e) {}
+  })();
+
+  // --- AUTOMATIC RAI08 BRANDING ---
+  function applyRai08Branding() {
+    try {
+      if (document.title && document.title.indexOf('DmFirst') !== -1) {
+        document.title = document.title.replace(/DmFirst/g, 'Rai08');
+      }
+
+      // Replace header logo images with sharp Rai08 logo
+      var imgs = document.querySelectorAll('img[src*="headlogo"], img[alt*="logo" i]');
+      for (var i = 0; i < imgs.length; i++) {
+        var img = imgs[i];
+        if (img.src.indexOf('rai08-logo') === -1 && img.src.indexOf('deposit_qr') === -1) {
+          img.src = '/dmfirst/assets/png/rai08-logo.svg';
+          img.style.maxHeight = '42px';
+          img.style.width = 'auto';
+        }
+      }
+    } catch (e) {}
+  }
+
+  // --- FLOATING QUICK PORTAL PILL ---
+  function injectRai08NavPill() {
+    try {
+      if (document.getElementById('rai08-quick-bar')) return;
+      var bar = document.createElement('div');
+      bar.id = 'rai08-quick-bar';
+      bar.innerHTML = '<a href="/dmfirst/login/" style="background:linear-gradient(135deg, #ffd370, #f5a623);color:#000;font-weight:700;font-size:12px;padding:6px 14px;border-radius:20px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,0.5);display:inline-flex;align-items:center;gap:6px;"><span>👑</span> Rai08 Portal</a>' +
+        '<a href="/dmfirst/admin/" style="background:#151a24;border:1px solid #242c3d;color:#cbd5e1;font-weight:600;font-size:11px;padding:6px 12px;border-radius:20px;text-decoration:none;box-shadow:0 4px 14px rgba(0,0,0,0.5);display:inline-flex;align-items:center;gap:5px;"><span>⚙️</span> Admin</a>';
+      bar.style.position = 'fixed';
+      bar.style.bottom = '68px';
+      bar.style.right = '12px';
+      bar.style.zIndex = '999999';
+      bar.style.display = 'flex';
+      bar.style.gap = '8px';
+      bar.style.alignItems = 'center';
+      bar.style.fontFamily = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
+      document.body.appendChild(bar);
+    } catch(e) {}
+  }
+
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('DOMContentLoaded', function() {
+      applyRai08Branding();
+      injectRai08NavPill();
+    });
+    window.addEventListener('load', function() {
+      applyRai08Branding();
+      injectRai08NavPill();
+    });
+    setInterval(applyRai08Branding, 1500);
+    setTimeout(injectRai08NavPill, 800);
+  }
+
+  console.log('[Rai08] Supabase Auth Bridge & Branding initialized.');
 })();
+
