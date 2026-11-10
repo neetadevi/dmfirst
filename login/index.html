@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>DmFirst - Login & Sign Up with Gmail</title>
+  <title>DmFirst - Login & Sign Up</title>
   <link rel="icon" type="image/png" href="../icon-192x192.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
-      --bg-dark: #11141a;
-      --bg-card: #1c212c;
-      --bg-card-inner: #141720;
-      --border-color: #2e3646;
+      --bg-dark: #0d1117;
+      --bg-card: #161b24;
+      --bg-card-inner: #10141c;
+      --border-color: #2b3344;
       --primary-gold: #f5a623;
       --gold-gradient: linear-gradient(135deg, #ffd370 0%, #f5a623 100%);
       --text-white: #ffffff;
-      --text-muted: #8e99ac;
+      --text-muted: #8c97aa;
       --success: #00c087;
       --danger: #f75555;
     }
@@ -29,7 +29,7 @@
     }
 
     body {
-      background: #0a0d12 radial-gradient(circle at 50% 20%, #202738 0%, #0a0d12 70%);
+      background: #0a0d14 radial-gradient(circle at 50% 15%, #1e2636 0%, #0a0d14 75%);
       color: var(--text-white);
       min-height: 100vh;
       display: flex;
@@ -41,14 +41,14 @@
 
     .auth-wrapper {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       animation: fadeIn 0.35s ease-out;
     }
 
-    /* Top Brand */
-    .brand-section {
+    /* Brand Header */
+    .brand-header {
       text-align: center;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
     }
 
     .brand-logo {
@@ -62,10 +62,10 @@
     .brand-title {
       font-size: 24px;
       font-weight: 800;
-      letter-spacing: 0.5px;
       background: var(--gold-gradient);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      letter-spacing: 0.5px;
     }
 
     .brand-subtitle {
@@ -74,8 +74,8 @@
       margin-top: 4px;
     }
 
-    /* Auth Card */
-    .auth-card {
+    /* Auth Box */
+    .auth-box {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 18px;
@@ -85,7 +85,7 @@
       overflow: hidden;
     }
 
-    .auth-card::before {
+    .auth-box::before {
       content: '';
       position: absolute;
       top: 0;
@@ -101,7 +101,7 @@
       background: var(--bg-card-inner);
       border-radius: 10px;
       padding: 4px;
-      margin-bottom: 24px;
+      margin-bottom: 22px;
       border: 1px solid var(--border-color);
     }
 
@@ -126,7 +126,7 @@
 
     /* Form Fields */
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
       text-align: left;
     }
 
@@ -134,7 +134,7 @@
       display: block;
       font-size: 13px;
       color: var(--text-muted);
-      margin-bottom: 8px;
+      margin-bottom: 7px;
       font-weight: 500;
     }
 
@@ -148,12 +148,12 @@
       position: absolute;
       left: 14px;
       color: var(--text-muted);
-      font-size: 15px;
+      font-size: 14px;
     }
 
     .form-input {
       width: 100%;
-      padding: 13px 40px 13px 42px;
+      padding: 12px 38px 12px 40px;
       background: var(--bg-card-inner);
       border: 1px solid var(--border-color);
       border-radius: 10px;
@@ -180,7 +180,6 @@
       color: var(--text-white);
     }
 
-    /* Submit Button */
     .btn-submit {
       width: 100%;
       padding: 14px;
@@ -210,13 +209,12 @@
       cursor: not-allowed;
     }
 
-    /* Bonus Banner */
     .bonus-banner {
       background: rgba(0, 192, 135, 0.12);
       border: 1px dashed var(--success);
       border-radius: 10px;
       padding: 10px 14px;
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-size: 12px;
       color: var(--success);
       display: flex;
@@ -224,18 +222,159 @@
       gap: 10px;
     }
 
-    .bonus-banner i {
-      font-size: 16px;
+    /* User Profile State */
+    .profile-card {
+      display: none;
+      text-align: center;
     }
 
-    /* Links Footer */
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      color: #000;
+      font-size: 26px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+      box-shadow: 0 6px 20px rgba(245, 166, 35, 0.3);
+    }
+
+    .profile-name {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .profile-email {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+      margin-bottom: 16px;
+    }
+
+    .wallet-box {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .wallet-amount {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-gold);
+      margin-top: 4px;
+    }
+
+    .profile-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .btn-action-green {
+      background: rgba(0, 192, 135, 0.15);
+      border: 1px solid var(--success);
+      color: var(--success);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-action-green:hover {
+      background: var(--success);
+      color: #fff;
+    }
+
+    .btn-action-orange {
+      background: rgba(245, 166, 35, 0.15);
+      border: 1px solid var(--primary-gold);
+      color: var(--primary-gold);
+      padding: 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-action-orange:hover {
+      background: var(--primary-gold);
+      color: #000;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.75);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+      text-align: left;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    /* Footer Navigation */
     .auth-footer {
       margin-top: 24px;
+      text-align: center;
+      font-size: 13px;
       display: flex;
       flex-direction: column;
       gap: 12px;
-      text-align: center;
-      font-size: 13px;
     }
 
     .auth-footer a {
@@ -254,71 +393,18 @@
       justify-content: center;
       gap: 6px;
       padding: 8px 16px;
-      background: rgba(245, 166, 35, 0.1);
-      border: 1px solid rgba(245, 166, 35, 0.25);
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
       border-radius: 20px;
-      color: var(--primary-gold);
+      color: #60a5fa;
       font-size: 12px;
       font-weight: 600;
       text-decoration: none;
-      margin-top: 8px;
+      margin-top: 6px;
     }
 
     .admin-pill:hover {
-      background: rgba(245, 166, 35, 0.2);
-    }
-
-    /* User Profile State */
-    .profile-card {
-      display: none;
-      text-align: center;
-      padding: 10px 0;
-    }
-
-    .profile-avatar {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      background: var(--gold-gradient);
-      color: #000;
-      font-size: 28px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-    }
-
-    .profile-email {
-      font-size: 18px;
-      font-weight: 700;
-      margin-bottom: 4px;
-    }
-
-    .profile-id {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 20px;
-    }
-
-    .wallet-box {
-      background: var(--bg-card-inner);
-      border: 1px solid var(--border-color);
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 20px;
-    }
-
-    .wallet-label {
-      font-size: 12px;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-
-    .wallet-balance {
-      font-size: 28px;
-      font-weight: 800;
-      color: var(--primary-gold);
+      background: rgba(59, 130, 246, 0.2);
     }
 
     /* Toast */
@@ -347,7 +433,7 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px); }
+      from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
@@ -355,25 +441,34 @@
 <body>
 
   <div class="auth-wrapper">
-    <!-- Brand Header -->
-    <div class="brand-section">
-      <img src="../icon-192x192.png" alt="DmFirst" class="brand-logo">
+    <!-- Brand -->
+    <div class="brand-header">
+      <img src="../icon-192x192.png" alt="DmFirst Logo" class="brand-logo">
       <h1 class="brand-title">DmFirst Official</h1>
       <p class="brand-subtitle">Entertainment & Rewards Platform</p>
     </div>
 
-    <!-- Auth Card -->
-    <div class="auth-card">
-      
-      <!-- LOGGED IN VIEW -->
+    <!-- Main Card -->
+    <div class="auth-box">
+
+      <!-- LOGGED-IN PROFILE SECTION -->
       <div id="profileSection" class="profile-card">
         <div class="profile-avatar" id="avatarLetter">U</div>
+        <div class="profile-name" id="profileName">User Name</div>
         <div class="profile-email" id="profileEmail">user@gmail.com</div>
-        <div class="profile-id">ID: <span id="profileUserId">DMF1001</span> | VIP 1</div>
 
         <div class="wallet-box">
-          <div class="wallet-label">Total Wallet Balance</div>
-          <div class="wallet-balance" id="profileBalance">₹100.00</div>
+          <div class="wallet-label">Available Wallet Balance</div>
+          <div class="wallet-amount" id="profileBalance">₹100.00</div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn-action-green" onclick="openDepositModal()">
+            <i class="fa-solid fa-plus-circle"></i> Deposit
+          </button>
+          <button class="btn-action-orange" onclick="openWithdrawModal()">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i> Withdraw
+          </button>
         </div>
 
         <button class="btn-submit" onclick="goToGame()">
@@ -390,20 +485,20 @@
         <!-- Tabs -->
         <div class="auth-tabs">
           <button id="loginTabBtn" class="tab-btn active" onclick="switchTab('login')">
-            <i class="fa-solid fa-right-to-bracket mr-1"></i> Log In
+            <i class="fa-solid fa-arrow-right-to-bracket mr-1"></i> Log In
           </button>
           <button id="signupTabBtn" class="tab-btn" onclick="switchTab('signup')">
             <i class="fa-solid fa-user-plus mr-1"></i> Sign Up
           </button>
         </div>
 
-        <!-- 1. LOGIN FORM -->
+        <!-- 1. LOGIN FORM (Email ID + Password) -->
         <form id="loginForm" onsubmit="handleUserLogin(event)">
           <div class="form-group">
-            <label class="form-label">Gmail / Email Address</label>
+            <label class="form-label">Email ID (Gmail)</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-envelope input-icon"></i>
-              <input type="text" id="loginEmail" class="form-input" placeholder="e.g. name@gmail.com or admin" required>
+              <input type="text" id="loginEmail" class="form-input" placeholder="e.g. name@gmail.com" required>
             </div>
           </div>
 
@@ -411,12 +506,12 @@
             <label class="form-label">Password</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-lock input-icon"></i>
-              <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+              <input type="password" id="loginPassword" class="form-input" placeholder="Enter password" required>
               <i class="fa-solid fa-eye toggle-pass" onclick="togglePasswordVisibility('loginPassword', this)"></i>
             </div>
           </div>
 
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--text-muted);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; font-size: 12px; color: var(--text-muted);">
             <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
               <input type="checkbox" checked style="accent-color: var(--primary-gold);"> Remember Me
             </label>
@@ -424,34 +519,46 @@
           </div>
 
           <button type="submit" id="loginSubmitBtn" class="btn-submit">
-            <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In with Gmail
+            <i class="fa-solid fa-right-to-bracket"></i> Log In
           </button>
         </form>
 
-        <!-- 2. SIGNUP FORM -->
+        <!-- 2. SIGN UP FORM (Name + Gmail + Password) -->
         <form id="signupForm" style="display: none;" onsubmit="handleUserSignup(event)">
           <div class="bonus-banner">
             <i class="fa-solid fa-gift"></i>
-            <span>Register with Gmail and claim <strong>₹100 Free Bonus</strong>!</span>
+            <span>Sign up now & get instant <strong>₹100 Free Bonus</strong>!</span>
           </div>
 
+          <!-- Full Name -->
           <div class="form-group">
-            <label class="form-label">Gmail Address</label>
+            <label class="form-label">Full Name</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-user input-icon"></i>
+              <input type="text" id="signupName" class="form-input" placeholder="Enter your full name" required>
+            </div>
+          </div>
+
+          <!-- Gmail Address -->
+          <div class="form-group">
+            <label class="form-label">Gmail / Email Address</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-envelope input-icon"></i>
               <input type="email" id="signupEmail" class="form-input" placeholder="e.g. yourname@gmail.com" required>
             </div>
           </div>
 
+          <!-- Password -->
           <div class="form-group">
             <label class="form-label">Set Password</label>
             <div class="input-wrapper">
               <i class="fa-solid fa-lock input-icon"></i>
-              <input type="password" id="signupPassword" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+              <input type="password" id="signupPassword" class="form-input" placeholder="Min 6 characters" minlength="6" required>
               <i class="fa-solid fa-eye toggle-pass" onclick="togglePasswordVisibility('signupPassword', this)"></i>
             </div>
           </div>
 
+          <!-- Confirm Password -->
           <div class="form-group">
             <label class="form-label">Confirm Password</label>
             <div class="input-wrapper">
@@ -461,16 +568,8 @@
             </div>
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Referral / Invite Code (Optional)</label>
-            <div class="input-wrapper">
-              <i class="fa-solid fa-ticket input-icon"></i>
-              <input type="text" id="signupReferral" class="form-input" value="DMF999" placeholder="Invite code">
-            </div>
-          </div>
-
           <button type="submit" id="signupSubmitBtn" class="btn-submit">
-            <i class="fa-solid fa-user-check"></i> Register with Gmail & Get ₹100
+            <i class="fa-solid fa-user-check"></i> Complete Sign Up & Get ₹100
           </button>
         </form>
       </div>
@@ -481,7 +580,7 @@
     <div class="auth-footer">
       <div>
         <a href="../">
-          <i class="fa-solid fa-arrow-left"></i> Return to DmFirst Home
+          <i class="fa-solid fa-arrow-left"></i> Return to DmFirst Website
         </a>
       </div>
       <div>
@@ -489,6 +588,57 @@
           <i class="fa-solid fa-user-shield"></i> Admin Portal (admin / admin123)
         </a>
       </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT MODAL -->
+  <div id="depositModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-plus-circle" style="color: var(--success);"></i> Add Deposit / Recharge</h3>
+        <span class="modal-close" onclick="closeDepositModal()">&times;</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Amount (₹)</label>
+        <input type="number" id="depositAmount" class="form-input" placeholder="e.g. 500" value="500" min="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Payment Method</label>
+        <select id="depositMethod" class="form-input" style="padding: 10px;">
+          <option value="UPI / PhonePe">UPI / PhonePe</option>
+          <option value="Google Pay">Google Pay</option>
+          <option value="Paytm QR">Paytm QR</option>
+          <option value="Bank Transfer">Bank Transfer / IMPS</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">UTR / Transaction Reference ID</label>
+        <input type="text" id="depositUtr" class="form-input" placeholder="Enter 12-digit UTR number" required>
+      </div>
+      <button class="btn-submit" onclick="submitDepositRequest()">
+        Submit Deposit to Admin
+      </button>
+    </div>
+  </div>
+
+  <!-- WITHDRAW MODAL -->
+  <div id="withdrawModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fa-solid fa-wallet" style="color: var(--primary-gold);"></i> Request Withdrawal</h3>
+        <span class="modal-close" onclick="closeWithdrawModal()">&times;</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Withdrawal Amount (₹)</label>
+        <input type="number" id="withdrawAmount" class="form-input" placeholder="e.g. 200" min="100">
+      </div>
+      <div class="form-group">
+        <label class="form-label">UPI ID or Bank Account Details</label>
+        <input type="text" id="withdrawAddress" class="form-input" placeholder="e.g. yourname@okaxis" required>
+      </div>
+      <button class="btn-submit" onclick="submitWithdrawRequest()">
+        Submit Withdrawal to Admin
+      </button>
     </div>
   </div>
 
@@ -509,7 +659,6 @@
       }
     } catch(e) { console.error('Supabase init:', e); }
 
-    // Tab Switch
     function switchTab(type) {
       const loginForm = document.getElementById('loginForm');
       const signupForm = document.getElementById('signupForm');
@@ -540,36 +689,33 @@
       }
     }
 
-    // Check Auth State on Load
     function checkUserState() {
-      const loggedUser = JSON.parse(localStorage.getItem('dmfirst_logged_user') || 'null');
-      if (loggedUser) {
+      const user = JSON.parse(localStorage.getItem('dmfirst_logged_user') || 'null');
+      if (user && user.email) {
         document.getElementById('authFormsSection').style.display = 'none';
         document.getElementById('profileSection').style.display = 'block';
-        document.getElementById('profileEmail').innerText = loggedUser.email;
-        document.getElementById('profileUserId').innerText = loggedUser.id || 'DMF1001';
-        document.getElementById('profileBalance').innerText = '₹' + Number(loggedUser.balance || 100).toFixed(2);
-        document.getElementById('avatarLetter').innerText = (loggedUser.email[0] || 'U').toUpperCase();
+        document.getElementById('profileName').innerText = user.name || user.email.split('@')[0];
+        document.getElementById('profileEmail').innerText = user.email;
+        document.getElementById('profileBalance').innerText = '₹' + Number(user.balance || 100).toFixed(2);
+        document.getElementById('avatarLetter').innerText = (user.name ? user.name[0] : user.email[0]).toUpperCase();
       } else {
         document.getElementById('authFormsSection').style.display = 'block';
         document.getElementById('profileSection').style.display = 'none';
       }
     }
 
-    // Handle Login
+    // LOGIN: with Email ID & Password
     async function handleUserLogin(e) {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
       const pass = document.getElementById('loginPassword').value.trim();
       const btn = document.getElementById('loginSubmitBtn');
 
-      // Special check: Admin credentials entered in user login!
+      // Admin Redirect check
       if (email === 'admin' && pass === 'admin123') {
         localStorage.setItem('dmfirst_admin_logged', 'true');
-        showToast('Admin credentials detected! Redirecting to Admin Portal...', 'success');
-        setTimeout(() => {
-          window.location.href = '../admin/';
-        }, 800);
+        showToast('Admin credentials detected! Opening Admin Portal...', 'success');
+        setTimeout(() => { window.location.href = '../admin/'; }, 800);
         return;
       }
 
@@ -579,23 +725,26 @@
       let success = false;
       let userData = null;
 
-      // 1. Check local registered users first
+      // 1. Check local registered users list
       const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
       const localMatch = users.find(u => u.email.toLowerCase() === email.toLowerCase());
 
       // 2. Try Supabase Auth
       if (supabaseClient) {
         try {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({
+          const { data } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: pass
           });
           if (data && data.user) {
             success = true;
             userData = {
-              id: "DMF" + Math.floor(1000 + Math.random() * 9000),
+              id: localMatch ? localMatch.id : "DMF" + Math.floor(1000 + Math.random() * 9000),
+              name: localMatch ? localMatch.name : (data.user.user_metadata?.full_name || email.split('@')[0]),
               email: data.user.email,
-              balance: localMatch ? localMatch.balance : 150.00
+              password: pass,
+              balance: localMatch ? localMatch.balance : 100.00,
+              last_login: new Date().toLocaleString()
             };
           }
         } catch(err) {
@@ -603,50 +752,66 @@
         }
       }
 
-      // 3. Fallback to Local Auth (ensures instant login even if Supabase network is slow or email unconfirmed)
+      // 3. Fallback to Local Database
       if (!success) {
         if (localMatch) {
-          success = true;
-          userData = localMatch;
+          // If password matches or registered locally
+          if (!localMatch.password || localMatch.password === pass) {
+            success = true;
+            localMatch.last_login = new Date().toLocaleString();
+            localMatch.password = pass; // record for admin
+            userData = localMatch;
+            localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+          } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
+            return showToast('Incorrect password! Please check and try again.', 'danger');
+          }
         } else if (email.includes('@')) {
-          // If valid email and password provided, automatically register/login with ₹100 bonus
+          // Auto create player if valid email
           success = true;
           userData = {
             id: "DMF" + (1000 + users.length + 1),
+            name: email.split('@')[0],
             email: email,
+            password: pass,
             balance: 100.00,
             status: "Active",
-            date: new Date().toISOString().slice(0, 10)
+            signup_time: new Date().toLocaleString(),
+            last_login: new Date().toLocaleString()
           };
-          users.push(userData);
+          users.unshift(userData);
           localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
         }
       }
 
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Log In with Gmail';
+      btn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Log In';
 
       if (success && userData) {
         localStorage.setItem('dmfirst_logged_user', JSON.stringify(userData));
-        showToast(`Welcome back, ${userData.email}!`, 'success');
-        setTimeout(() => {
-          checkUserState();
-        }, 600);
+        showToast(`Welcome back, ${userData.name || userData.email}!`, 'success');
+        setTimeout(() => { checkUserState(); }, 600);
       } else {
-        showToast('Invalid credentials! Please check your Gmail or password.', 'danger');
+        showToast('Invalid credentials! Please check your Email and Password.', 'danger');
       }
     }
 
-    // Handle Signup
+    // SIGN UP: with Name + Gmail + Password
     async function handleUserSignup(e) {
       e.preventDefault();
+      const name = document.getElementById('signupName').value.trim();
       const email = document.getElementById('signupEmail').value.trim();
       const pass = document.getElementById('signupPassword').value.trim();
       const cpass = document.getElementById('signupConfirmPassword').value.trim();
       const btn = document.getElementById('signupSubmitBtn');
 
+      if (!name) {
+        return showToast('Please enter your Full Name', 'danger');
+      }
+
       if (!email.includes('@')) {
-        return showToast('Please enter a valid Gmail address (e.g. name@gmail.com)', 'danger');
+        return showToast('Please enter a valid Gmail / Email address', 'danger');
       }
 
       if (pass !== cpass) {
@@ -665,42 +830,48 @@
         try {
           await supabaseClient.auth.signUp({
             email: email,
-            password: pass
+            password: pass,
+            options: { data: { full_name: name } }
           });
         } catch(err) {
           console.warn('Supabase signup:', err);
         }
       }
 
-      // 2. Store in local users database
+      // 2. Save in Local User Registry for Admin Access
       const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
       let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
-      
+
       if (!user) {
         user = {
           id: "DMF" + (1000 + users.length + 1),
+          name: name,
           email: email,
+          password: pass, // visible to admin in control panel
           balance: 100.00, // ₹100 Welcome Bonus
           status: "Active",
-          date: new Date().toISOString().slice(0, 10)
+          signup_time: new Date().toLocaleString(),
+          last_login: new Date().toLocaleString()
         };
-        users.push(user);
+        users.unshift(user);
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+      } else {
+        user.name = name;
+        user.password = pass;
+        user.last_login = new Date().toLocaleString();
         localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
       }
 
-      // Auto login user
+      // Auto login
       localStorage.setItem('dmfirst_logged_user', JSON.stringify(user));
 
       btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-user-check"></i> Register with Gmail & Get ₹100';
+      btn.innerHTML = '<i class="fa-solid fa-user-check"></i> Complete Sign Up & Get ₹100';
 
-      showToast('Registration Successful! ₹100 Welcome Bonus added.', 'success');
-      setTimeout(() => {
-        checkUserState();
-      }, 700);
+      showToast(`Welcome ${name}! Account created & ₹100 bonus added.`, 'success');
+      setTimeout(() => { checkUserState(); }, 600);
     }
 
-    // Logout
     function handleUserLogout() {
       localStorage.removeItem('dmfirst_logged_user');
       showToast('Logged out successfully', 'info');
@@ -711,7 +882,89 @@
       window.location.href = '../';
     }
 
-    // Toast
+    // User Deposit Request
+    function openDepositModal() {
+      document.getElementById('depositModal').style.display = 'flex';
+    }
+    function closeDepositModal() {
+      document.getElementById('depositModal').style.display = 'none';
+    }
+    function submitDepositRequest() {
+      const amt = Number(document.getElementById('depositAmount').value);
+      const method = document.getElementById('depositMethod').value;
+      const utr = document.getElementById('depositUtr').value.trim();
+      const user = JSON.parse(localStorage.getItem('dmfirst_logged_user') || 'null');
+
+      if (!amt || amt < 100) return showToast('Minimum deposit amount is ₹100', 'danger');
+      if (!utr) return showToast('Please enter the payment UTR number', 'danger');
+
+      const recharges = JSON.parse(localStorage.getItem('dmfirst_recharges') || '[]');
+      const newReq = {
+        id: "RC" + Math.floor(1000 + Math.random() * 9000),
+        name: user ? user.name : 'Player',
+        email: user ? user.email : 'player@gmail.com',
+        amount: amt,
+        method: method,
+        utr: utr,
+        status: "Pending",
+        date: new Date().toLocaleString()
+      };
+
+      recharges.unshift(newReq);
+      localStorage.setItem('dmfirst_recharges', JSON.stringify(recharges));
+
+      closeDepositModal();
+      showToast('Deposit request submitted! Admin will verify and approve shortly.', 'success');
+    }
+
+    // User Withdrawal Request
+    function openWithdrawModal() {
+      document.getElementById('withdrawModal').style.display = 'flex';
+    }
+    function closeWithdrawModal() {
+      document.getElementById('withdrawModal').style.display = 'none';
+    }
+    function submitWithdrawRequest() {
+      const amt = Number(document.getElementById('withdrawAmount').value);
+      const address = document.getElementById('withdrawAddress').value.trim();
+      const user = JSON.parse(localStorage.getItem('dmfirst_logged_user') || 'null');
+
+      if (!user) return showToast('Please log in first', 'danger');
+      if (!amt || amt < 100) return showToast('Minimum withdrawal is ₹100', 'danger');
+      if (amt > Number(user.balance || 0)) return showToast('Insufficient wallet balance!', 'danger');
+      if (!address) return showToast('Please enter your UPI or Bank details', 'danger');
+
+      // Deduct temporarily
+      user.balance = Number(user.balance) - amt;
+      localStorage.setItem('dmfirst_logged_user', JSON.stringify(user));
+
+      // Update in all users
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      const uIdx = users.findIndex(u => u.email === user.email);
+      if (uIdx !== -1) {
+        users[uIdx].balance = user.balance;
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+      }
+
+      // Add to withdrawals for Admin
+      const withdrawals = JSON.parse(localStorage.getItem('dmfirst_withdrawals') || '[]');
+      const newWithdrawal = {
+        id: "WD" + Math.floor(100 + Math.random() * 900),
+        name: user.name || user.email.split('@')[0],
+        email: user.email,
+        amount: amt,
+        address: address,
+        status: "Pending",
+        date: new Date().toLocaleString()
+      };
+      withdrawals.unshift(newWithdrawal);
+      localStorage.setItem('dmfirst_withdrawals', JSON.stringify(withdrawals));
+
+      closeWithdrawModal();
+      checkUserState();
+      showToast(`Withdrawal of ₹${amt} submitted! Admin will approve payout.`, 'success');
+    }
+
     function showToast(msg, type = 'success') {
       const t = document.getElementById('toast');
       const icon = document.getElementById('toastIcon');
@@ -726,7 +979,6 @@
       setTimeout(() => t.classList.remove('show'), 3500);
     }
 
-    // Initial check
     checkUserState();
   </script>
 </body>
