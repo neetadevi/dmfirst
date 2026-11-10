@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DmFirst - Login & Sign Up with Gmail</title>
+  <link rel="icon" type="image/png" href="../icon-192x192.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-dark: #11141a;
+      --bg-card: #1c212c;
+      --bg-card-inner: #141720;
+      --border-color: #2e3646;
+      --primary-gold: #f5a623;
+      --gold-gradient: linear-gradient(135deg, #ffd370 0%, #f5a623 100%);
+      --text-white: #ffffff;
+      --text-muted: #8e99ac;
+      --success: #00c087;
+      --danger: #f75555;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background: #0a0d12 radial-gradient(circle at 50% 20%, #202738 0%, #0a0d12 70%);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .auth-wrapper {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeIn 0.35s ease-out;
+    }
+
+    /* Top Brand */
+    .brand-section {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo {
+      width: 76px;
+      height: 76px;
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(245, 166, 35, 0.3);
+      margin-bottom: 12px;
+    }
+
+    .brand-title {
+      font-size: 24px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Auth Card */
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 28px 24px;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .auth-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--gold-gradient);
+    }
+
+    /* Tabs */
+    .auth-tabs {
+      display: flex;
+      background: var(--bg-card-inner);
+      border-radius: 10px;
+      padding: 4px;
+      margin-bottom: 24px;
+      border: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      background: var(--gold-gradient);
+      color: #000;
+      box-shadow: 0 4px 12px rgba(245, 166, 35, 0.25);
+    }
+
+    /* Form Fields */
+    .form-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-icon {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 13px 40px 13px 42px;
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-white);
+      font-size: 14px;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 14px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .toggle-pass:hover {
+      color: var(--text-white);
+    }
+
+    /* Submit Button */
+    .btn-submit {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold-gradient);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+      box-shadow: 0 6px 16px rgba(245, 166, 35, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-submit:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Bonus Banner */
+    .bonus-banner {
+      background: rgba(0, 192, 135, 0.12);
+      border: 1px dashed var(--success);
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
+      font-size: 12px;
+      color: var(--success);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .bonus-banner i {
+      font-size: 16px;
+    }
+
+    /* Links Footer */
+    .auth-footer {
+      margin-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .auth-footer a {
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .auth-footer a:hover {
+      color: var(--primary-gold);
+    }
+
+    .admin-pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      background: rgba(245, 166, 35, 0.1);
+      border: 1px solid rgba(245, 166, 35, 0.25);
+      border-radius: 20px;
+      color: var(--primary-gold);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-top: 8px;
+    }
+
+    .admin-pill:hover {
+      background: rgba(245, 166, 35, 0.2);
+    }
+
+    /* User Profile State */
+    .profile-card {
+      display: none;
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .profile-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      color: #000;
+      font-size: 28px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+
+    .profile-email {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .profile-id {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .wallet-box {
+      background: var(--bg-card-inner);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .wallet-balance {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--primary-gold);
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      color: #fff;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+    <!-- Brand Header -->
+    <div class="brand-section">
+      <img src="../icon-192x192.png" alt="DmFirst" class="brand-logo">
+      <h1 class="brand-title">DmFirst Official</h1>
+      <p class="brand-subtitle">Entertainment & Rewards Platform</p>
+    </div>
+
+    <!-- Auth Card -->
+    <div class="auth-card">
+      
+      <!-- LOGGED IN VIEW -->
+      <div id="profileSection" class="profile-card">
+        <div class="profile-avatar" id="avatarLetter">U</div>
+        <div class="profile-email" id="profileEmail">user@gmail.com</div>
+        <div class="profile-id">ID: <span id="profileUserId">DMF1001</span> | VIP 1</div>
+
+        <div class="wallet-box">
+          <div class="wallet-label">Total Wallet Balance</div>
+          <div class="wallet-balance" id="profileBalance">₹100.00</div>
+        </div>
+
+        <button class="btn-submit" onclick="goToGame()">
+          <i class="fa-solid fa-gamepad"></i> Play Games Now
+        </button>
+
+        <button class="btn-submit" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-white); margin-top: 10px;" onclick="handleUserLogout()">
+          <i class="fa-solid fa-right-from-bracket"></i> Log Out
+        </button>
+      </div>
+
+      <!-- AUTH FORMS (LOGIN / SIGNUP) -->
+      <div id="authFormsSection">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <button id="loginTabBtn" class="tab-btn active" onclick="switchTab('login')">
+            <i class="fa-solid fa-right-to-bracket mr-1"></i> Log In
+          </button>
+          <button id="signupTabBtn" class="tab-btn" onclick="switchTab('signup')">
+            <i class="fa-solid fa-user-plus mr-1"></i> Sign Up
+          </button>
+        </div>
+
+        <!-- 1. LOGIN FORM -->
+        <form id="loginForm" onsubmit="handleUserLogin(event)">
+          <div class="form-group">
+            <label class="form-label">Gmail / Email Address</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="text" id="loginEmail" class="form-input" placeholder="e.g. name@gmail.com or admin" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Password</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="loginPassword" class="form-input" placeholder="Enter your password" required>
+              <i class="fa-solid fa-eye toggle-pass" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+            </div>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; font-size: 12px; color: var(--text-muted);">
+            <label style="display: flex; align-items: center; gap: 6px; cursor: pointer;">
+              <input type="checkbox" checked style="accent-color: var(--primary-gold);"> Remember Me
+            </label>
+            <span style="cursor: pointer;" onclick="showToast('Password reset link will be sent to your Gmail', 'info')">Forgot Password?</span>
+          </div>
+
+          <button type="submit" id="loginSubmitBtn" class="btn-submit">
+            <i class="fa-solid fa-arrow-right-to-bracket"></i> Log In with Gmail
+          </button>
+        </form>
+
+        <!-- 2. SIGNUP FORM -->
+        <form id="signupForm" style="display: none;" onsubmit="handleUserSignup(event)">
+          <div class="bonus-banner">
+            <i class="fa-solid fa-gift"></i>
+            <span>Register with Gmail and claim <strong>₹100 Free Bonus</strong>!</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Gmail Address</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-envelope input-icon"></i>
+              <input type="email" id="signupEmail" class="form-input" placeholder="e.g. yourname@gmail.com" required>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Set Password</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-lock input-icon"></i>
+              <input type="password" id="signupPassword" class="form-input" placeholder="At least 6 characters" minlength="6" required>
+              <i class="fa-solid fa-eye toggle-pass" onclick="togglePasswordVisibility('signupPassword', this)"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Confirm Password</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-shield-halved input-icon"></i>
+              <input type="password" id="signupConfirmPassword" class="form-input" placeholder="Repeat your password" minlength="6" required>
+              <i class="fa-solid fa-eye toggle-pass" onclick="togglePasswordVisibility('signupConfirmPassword', this)"></i>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Referral / Invite Code (Optional)</label>
+            <div class="input-wrapper">
+              <i class="fa-solid fa-ticket input-icon"></i>
+              <input type="text" id="signupReferral" class="form-input" value="DMF999" placeholder="Invite code">
+            </div>
+          </div>
+
+          <button type="submit" id="signupSubmitBtn" class="btn-submit">
+            <i class="fa-solid fa-user-check"></i> Register with Gmail & Get ₹100
+          </button>
+        </form>
+      </div>
+
+    </div>
+
+    <!-- Footer Links -->
+    <div class="auth-footer">
+      <div>
+        <a href="../">
+          <i class="fa-solid fa-arrow-left"></i> Return to DmFirst Home
+        </a>
+      </div>
+      <div>
+        <a href="../admin/" class="admin-pill">
+          <i class="fa-solid fa-user-shield"></i> Admin Portal (admin / admin123)
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast">
+    <i id="toastIcon" class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+    <span id="toastMsg">Action completed</span>
+  </div>
+
+  <script>
+    // Supabase Initialization
+    const SUPABASE_URL = "https://pylgiqhcnilxvspyascz.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5bGdpcWhjbmlseHZzcHlhc2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NDM0MzEsImV4cCI6MjEwOTExOTQzMX0.F9FVBCmcJUGK7Foy-Fhr99qwSAmLPaMzLa1ralOF7zU";
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(e) { console.error('Supabase init:', e); }
+
+    // Tab Switch
+    function switchTab(type) {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const loginBtn = document.getElementById('loginTabBtn');
+      const signupBtn = document.getElementById('signupTabBtn');
+
+      if (type === 'login') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+        loginBtn.classList.add('active');
+        signupBtn.classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+        signupBtn.classList.add('active');
+        loginBtn.classList.remove('active');
+      }
+    }
+
+    function togglePasswordVisibility(fieldId, icon) {
+      const input = document.getElementById(fieldId);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'fa-solid fa-eye-slash toggle-pass';
+      } else {
+        input.type = 'password';
+        icon.className = 'fa-solid fa-eye toggle-pass';
+      }
+    }
+
+    // Check Auth State on Load
+    function checkUserState() {
+      const loggedUser = JSON.parse(localStorage.getItem('dmfirst_logged_user') || 'null');
+      if (loggedUser) {
+        document.getElementById('authFormsSection').style.display = 'none';
+        document.getElementById('profileSection').style.display = 'block';
+        document.getElementById('profileEmail').innerText = loggedUser.email;
+        document.getElementById('profileUserId').innerText = loggedUser.id || 'DMF1001';
+        document.getElementById('profileBalance').innerText = '₹' + Number(loggedUser.balance || 100).toFixed(2);
+        document.getElementById('avatarLetter').innerText = (loggedUser.email[0] || 'U').toUpperCase();
+      } else {
+        document.getElementById('authFormsSection').style.display = 'block';
+        document.getElementById('profileSection').style.display = 'none';
+      }
+    }
+
+    // Handle Login
+    async function handleUserLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value.trim();
+      const pass = document.getElementById('loginPassword').value.trim();
+      const btn = document.getElementById('loginSubmitBtn');
+
+      // Special check: Admin credentials entered in user login!
+      if (email === 'admin' && pass === 'admin123') {
+        localStorage.setItem('dmfirst_admin_logged', 'true');
+        showToast('Admin credentials detected! Redirecting to Admin Portal...', 'success');
+        setTimeout(() => {
+          window.location.href = '../admin/';
+        }, 800);
+        return;
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Logging In...';
+
+      let success = false;
+      let userData = null;
+
+      // 1. Check local registered users first
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      const localMatch = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+      // 2. Try Supabase Auth
+      if (supabaseClient) {
+        try {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: email,
+            password: pass
+          });
+          if (data && data.user) {
+            success = true;
+            userData = {
+              id: "DMF" + Math.floor(1000 + Math.random() * 9000),
+              email: data.user.email,
+              balance: localMatch ? localMatch.balance : 150.00
+            };
+          }
+        } catch(err) {
+          console.warn('Supabase auth attempt:', err);
+        }
+      }
+
+      // 3. Fallback to Local Auth (ensures instant login even if Supabase network is slow or email unconfirmed)
+      if (!success) {
+        if (localMatch) {
+          success = true;
+          userData = localMatch;
+        } else if (email.includes('@')) {
+          // If valid email and password provided, automatically register/login with ₹100 bonus
+          success = true;
+          userData = {
+            id: "DMF" + (1000 + users.length + 1),
+            email: email,
+            balance: 100.00,
+            status: "Active",
+            date: new Date().toISOString().slice(0, 10)
+          };
+          users.push(userData);
+          localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-arrow-right-to-bracket"></i> Log In with Gmail';
+
+      if (success && userData) {
+        localStorage.setItem('dmfirst_logged_user', JSON.stringify(userData));
+        showToast(`Welcome back, ${userData.email}!`, 'success');
+        setTimeout(() => {
+          checkUserState();
+        }, 600);
+      } else {
+        showToast('Invalid credentials! Please check your Gmail or password.', 'danger');
+      }
+    }
+
+    // Handle Signup
+    async function handleUserSignup(e) {
+      e.preventDefault();
+      const email = document.getElementById('signupEmail').value.trim();
+      const pass = document.getElementById('signupPassword').value.trim();
+      const cpass = document.getElementById('signupConfirmPassword').value.trim();
+      const btn = document.getElementById('signupSubmitBtn');
+
+      if (!email.includes('@')) {
+        return showToast('Please enter a valid Gmail address (e.g. name@gmail.com)', 'danger');
+      }
+
+      if (pass !== cpass) {
+        return showToast('Passwords do not match! Please check again.', 'danger');
+      }
+
+      if (pass.length < 6) {
+        return showToast('Password must be at least 6 characters.', 'danger');
+      }
+
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Creating Account...';
+
+      // 1. Try Supabase Auth Signup
+      if (supabaseClient) {
+        try {
+          await supabaseClient.auth.signUp({
+            email: email,
+            password: pass
+          });
+        } catch(err) {
+          console.warn('Supabase signup:', err);
+        }
+      }
+
+      // 2. Store in local users database
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      let user = users.find(u => u.email.toLowerCase() === email.toLowerCase());
+      
+      if (!user) {
+        user = {
+          id: "DMF" + (1000 + users.length + 1),
+          email: email,
+          balance: 100.00, // ₹100 Welcome Bonus
+          status: "Active",
+          date: new Date().toISOString().slice(0, 10)
+        };
+        users.push(user);
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+      }
+
+      // Auto login user
+      localStorage.setItem('dmfirst_logged_user', JSON.stringify(user));
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-user-check"></i> Register with Gmail & Get ₹100';
+
+      showToast('Registration Successful! ₹100 Welcome Bonus added.', 'success');
+      setTimeout(() => {
+        checkUserState();
+      }, 700);
+    }
+
+    // Logout
+    function handleUserLogout() {
+      localStorage.removeItem('dmfirst_logged_user');
+      showToast('Logged out successfully', 'info');
+      checkUserState();
+    }
+
+    function goToGame() {
+      window.location.href = '../';
+    }
+
+    // Toast
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').innerText = msg;
+
+      icon.className = type === 'success' ? 'fa-solid fa-circle-check' :
+                       type === 'danger' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-info';
+      icon.style.color = type === 'success' ? 'var(--success)' :
+                         type === 'danger' ? 'var(--danger)' : 'var(--primary-gold)';
+
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // Initial check
+    checkUserState();
+  </script>
+</body>
+</html>

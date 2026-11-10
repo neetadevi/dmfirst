@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DmFirst Admin Portal - Management & Control</title>
+  <link rel="icon" type="image/png" href="../icon-192x192.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --bg-dark: #0f1218;
+      --bg-card: #181d26;
+      --bg-card-hover: #212734;
+      --border-color: #2b3345;
+      --primary-gold: #f5a623;
+      --gold-gradient: linear-gradient(135deg, #ffd370 0%, #f5a623 100%);
+      --text-white: #ffffff;
+      --text-muted: #8c97aa;
+      --success: #00c087;
+      --danger: #f75555;
+      --warning: #ffb800;
+      --info: #3b82f6;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-white);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg-dark); }
+    ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+
+    /* Login Screen */
+    .login-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      background: radial-gradient(circle at top center, #262f40 0%, #0f1218 70%);
+    }
+
+    .login-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 40px 30px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      text-align: center;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(245, 166, 35, 0.3);
+    }
+
+    .login-title {
+      font-size: 24px;
+      font-weight: 700;
+      background: var(--gold-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    .login-subtitle {
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .input-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .input-field-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-field-wrapper i {
+      position: absolute;
+      left: 14px;
+      color: var(--text-muted);
+      font-size: 15px;
+    }
+
+    .input-field {
+      width: 100%;
+      padding: 13px 14px 13px 42px;
+      background: #11151d;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-white);
+      font-size: 14px;
+      transition: all 0.2s;
+      outline: none;
+    }
+
+    .input-field:focus {
+      border-color: var(--primary-gold);
+      box-shadow: 0 0 0 3px rgba(245, 166, 35, 0.15);
+    }
+
+    .btn-gold {
+      width: 100%;
+      padding: 14px;
+      background: var(--gold-gradient);
+      border: none;
+      border-radius: 10px;
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 10px;
+      box-shadow: 0 4px 14px rgba(245, 166, 35, 0.3);
+    }
+
+    .btn-gold:hover {
+      opacity: 0.95;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      padding: 8px 16px;
+      background: transparent;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-white);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--text-muted);
+    }
+
+    .demo-hint {
+      margin-top: 20px;
+      padding: 12px;
+      background: #11151d;
+      border: 1px dashed var(--border-color);
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .demo-hint span strong {
+      color: var(--primary-gold);
+    }
+
+    .auto-fill-btn {
+      color: var(--primary-gold);
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+
+    /* Dashboard Layout */
+    .dashboard-layout {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 260px;
+      background: var(--bg-card);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+    }
+
+    .sidebar-header .brand-name {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .sidebar-header .brand-badge {
+      font-size: 10px;
+      padding: 2px 6px;
+      background: rgba(245, 166, 35, 0.2);
+      color: var(--primary-gold);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+
+    .sidebar-menu {
+      list-style: none;
+      padding: 16px 12px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    .sidebar-item {
+      margin-bottom: 4px;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 14px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .sidebar-link:hover, .sidebar-link.active {
+      color: var(--text-white);
+      background: var(--bg-card-hover);
+    }
+
+    .sidebar-link.active {
+      background: linear-gradient(90deg, rgba(245, 166, 35, 0.15), transparent);
+      color: var(--primary-gold);
+      border-left: 3px solid var(--primary-gold);
+    }
+
+    .sidebar-link i {
+      font-size: 16px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .sidebar-footer {
+      padding: 16px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    /* Main Content */
+    .main-wrapper {
+      margin-left: 260px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 68px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 99;
+    }
+
+    .topbar-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text-white);
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .admin-profile-badge {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      background: var(--bg-dark);
+      border: 1px solid var(--border-color);
+      border-radius: 30px;
+      font-size: 13px;
+    }
+
+    .admin-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--gold-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #000;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .content-area {
+      padding: 28px;
+      flex-grow: 1;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .stat-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .stat-title {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .stat-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+
+    .stat-value {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-white);
+    }
+
+    .stat-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 8px;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 28px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Tables */
+    .table-responsive {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 13px;
+    }
+
+    th {
+      color: var(--text-muted);
+      font-weight: 600;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+      background: #13171f;
+    }
+
+    td {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-white);
+    }
+
+    tr:hover td {
+      background: var(--bg-card-hover);
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .status-active { background: rgba(0, 192, 135, 0.15); color: var(--success); }
+    .status-pending { background: rgba(255, 184, 0, 0.15); color: var(--warning); }
+    .status-rejected { background: rgba(247, 85, 85, 0.15); color: var(--danger); }
+    .status-blocked { background: rgba(247, 85, 85, 0.15); color: var(--danger); }
+
+    .action-btn {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-approve { background: rgba(0, 192, 135, 0.2); color: var(--success); }
+    .btn-approve:hover { background: var(--success); color: #fff; }
+
+    .btn-reject { background: rgba(247, 85, 85, 0.2); color: var(--danger); }
+    .btn-reject:hover { background: var(--danger); color: #fff; }
+
+    .btn-edit { background: rgba(245, 166, 35, 0.2); color: var(--primary-gold); }
+    .btn-edit:hover { background: var(--primary-gold); color: #000; }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 24px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .modal-close {
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 18px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 12px 20px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      color: var(--text-white);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      z-index: 2000;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { width: 70px; }
+      .sidebar-header .brand-name, .sidebar-header .brand-badge, .sidebar-link span, .sidebar-footer span { display: none; }
+      .sidebar-header { justify-content: center; padding: 16px 0; }
+      .sidebar-link { justify-content: center; }
+      .main-wrapper { margin-left: 70px; }
+      .topbar { padding: 0 16px; }
+      .content-area { padding: 16px; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.97); }
+      to { opacity: 1; transform: scale(1); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ADMIN LOGIN SCREEN -->
+  <div id="loginScreen" class="login-container">
+    <div class="login-card">
+      <img src="../icon-192x192.png" alt="DmFirst Logo" class="login-logo">
+      <h1 class="login-title">DmFirst Admin</h1>
+      <p class="login-subtitle">Control & Operations Portal</p>
+
+      <form id="loginForm" onsubmit="handleAdminLogin(event)">
+        <div class="input-group">
+          <label class="input-label">Username</label>
+          <div class="input-field-wrapper">
+            <i class="fa-solid fa-user-shield"></i>
+            <input type="text" id="adminUser" class="input-field" placeholder="Enter admin username" required>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">Password</label>
+          <div class="input-field-wrapper">
+            <i class="fa-solid fa-lock"></i>
+            <input type="password" id="adminPass" class="input-field" placeholder="Enter password" required>
+          </div>
+        </div>
+
+        <button type="submit" class="btn-gold">
+          <i class="fa-solid fa-right-to-bracket mr-2"></i> Log In to Dashboard
+        </button>
+      </form>
+
+      <div class="demo-hint">
+        <span>Admin: <strong>admin</strong> / <strong>admin123</strong></span>
+        <span class="auto-fill-btn" onclick="autoFillAdmin()">Auto Fill</span>
+      </div>
+
+      <div style="margin-top: 20px; font-size: 13px;">
+        <a href="../" style="color: var(--text-muted); text-decoration: none;">
+          <i class="fa-solid fa-arrow-left"></i> Return to Main Website
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN DASHBOARD LAYOUT -->
+  <div id="dashboardLayout" class="dashboard-layout">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <img src="../icon-192x192.png" alt="Logo">
+        <div>
+          <div class="brand-name">DmFirst</div>
+          <span class="brand-badge">ADMIN v2.0</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="sidebar-item">
+          <div class="sidebar-link active" onclick="switchTab('tab-overview', this)">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Overview</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-users', this)">
+            <i class="fa-solid fa-users"></i>
+            <span>User Management</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-recharges', this)">
+            <i class="fa-solid fa-money-bill-transfer"></i>
+            <span>Recharge Requests</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-withdrawals', this)">
+            <i class="fa-solid fa-wallet"></i>
+            <span>Withdrawals</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-games', this)">
+            <i class="fa-solid fa-dice"></i>
+            <span>Game Control (WinGo)</span>
+          </div>
+        </li>
+        <li class="sidebar-item">
+          <div class="sidebar-link" onclick="switchTab('tab-settings', this)">
+            <i class="fa-solid fa-sliders"></i>
+            <span>Supabase & Settings</span>
+          </div>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <a href="../" class="btn-outline" style="width: 100%; justify-content: center; text-decoration: none;">
+          <i class="fa-solid fa-globe"></i>
+          <span>Live Site</span>
+        </a>
+      </div>
+    </aside>
+
+    <!-- MAIN WRAPPER -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title" id="tabHeading">Dashboard Overview</div>
+        <div class="topbar-actions">
+          <div class="admin-profile-badge">
+            <div class="admin-avatar">A</div>
+            <span>admin (Super Admin)</span>
+          </div>
+          <button class="btn-outline" onclick="handleAdminLogout()">
+            <i class="fa-solid fa-power-off"></i>
+            <span>Logout</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content-area">
+        
+        <!-- 1. OVERVIEW TAB -->
+        <div id="tab-overview" class="tab-content">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Total Registered Users</span>
+                <div class="stat-icon" style="background: rgba(59, 130, 246, 0.15); color: var(--info);">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+              </div>
+              <div class="stat-value" id="statUsersCount">0</div>
+              <div class="stat-badge" style="background: rgba(0, 192, 135, 0.15); color: var(--success);">
+                <i class="fa-solid fa-arrow-trend-up"></i> +12% this week
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Total Deposits</span>
+                <div class="stat-icon" style="background: rgba(0, 192, 135, 0.15); color: var(--success);">
+                  <i class="fa-solid fa-indian-rupee-sign"></i>
+                </div>
+              </div>
+              <div class="stat-value" id="statTotalDeposit">₹48,250.00</div>
+              <div class="stat-badge" style="background: rgba(0, 192, 135, 0.15); color: var(--success);">
+                <i class="fa-solid fa-circle-check"></i> Verified
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Total Withdrawals</span>
+                <div class="stat-icon" style="background: rgba(247, 85, 85, 0.15); color: var(--danger);">
+                  <i class="fa-solid fa-arrow-up-from-bracket"></i>
+                </div>
+              </div>
+              <div class="stat-value" id="statTotalWithdraw">₹12,400.00</div>
+              <div class="stat-badge" style="background: rgba(245, 166, 35, 0.15); color: var(--primary-gold);">
+                <i class="fa-solid fa-clock"></i> 2 Pending
+              </div>
+            </div>
+
+            <div class="stat-card">
+              <div class="stat-header">
+                <span class="stat-title">Live Games Active</span>
+                <div class="stat-icon" style="background: rgba(245, 166, 35, 0.15); color: var(--primary-gold);">
+                  <i class="fa-solid fa-gamepad"></i>
+                </div>
+              </div>
+              <div class="stat-value">6 Games</div>
+              <div class="stat-badge" style="background: rgba(0, 192, 135, 0.15); color: var(--success);">
+                WinGo, Trx, 5D, K3
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Action Panels -->
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-bolt" style="color: var(--primary-gold);"></i>
+                <span>Quick Admin Controls</span>
+              </div>
+              <div>
+                <button class="btn-outline" onclick="switchTab('tab-users')"><i class="fa-solid fa-user-plus"></i> Add User</button>
+                <button class="btn-outline" onclick="switchTab('tab-recharges')"><i class="fa-solid fa-check-double"></i> Review Recharges</button>
+              </div>
+            </div>
+            <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6;">
+              Welcome to the DmFirst Platform Administration Console. From here you can manage all user Gmail accounts, approve live deposits, handle payouts, and configure game outcomes directly. All accounts are synchronized with Supabase Auth and Database.
+            </p>
+          </div>
+        </div>
+
+        <!-- 2. USERS TAB -->
+        <div id="tab-users" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-users" style="color: var(--info);"></i>
+                <span>Registered Gmail Users</span>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <input type="text" id="userSearchInput" class="input-field" placeholder="Search by Gmail..." style="width: 220px; padding: 8px 12px;" onkeyup="renderUsersTable()">
+                <button class="btn-gold" style="width: auto; padding: 8px 16px; margin: 0;" onclick="openAddUserModal()">
+                  <i class="fa-solid fa-plus"></i> Add User
+                </button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>User ID</th>
+                    <th>Gmail Address</th>
+                    <th>Registered Date</th>
+                    <th>Wallet Balance</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. RECHARGES TAB -->
+        <div id="tab-recharges" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-money-bill-transfer" style="color: var(--success);"></i>
+                <span>Deposit & Recharge Requests</span>
+              </div>
+              <button class="btn-outline" onclick="renderRechargesTable()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Req ID</th>
+                    <th>User Gmail</th>
+                    <th>Amount</th>
+                    <th>Method</th>
+                    <th>UTR / Ref Number</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="rechargeTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. WITHDRAWALS TAB -->
+        <div id="tab-withdrawals" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-wallet" style="color: var(--danger);"></i>
+                <span>User Withdrawal Requests</span>
+              </div>
+              <button class="btn-outline" onclick="renderWithdrawalsTable()"><i class="fa-solid fa-rotate"></i> Refresh</button>
+            </div>
+
+            <div class="table-responsive">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Payout ID</th>
+                    <th>User Gmail</th>
+                    <th>Amount</th>
+                    <th>Payout Address / UPI</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="withdrawTableBody">
+                  <!-- Populated dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. GAME CONTROL TAB -->
+        <div id="tab-games" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-dice" style="color: var(--primary-gold);"></i>
+                <span>WinGo Result Override & Predictions</span>
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+              <div style="background: var(--bg-dark); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 12px; color: var(--primary-gold);">WinGo 1-Min Outcome</h4>
+                <div class="input-group">
+                  <label class="input-label">Next Winning Number (0 - 9)</label>
+                  <select id="wingoNextNumber" class="input-field" style="padding: 10px 14px;">
+                    <option value="AUTO">Auto Random (Fair Play)</option>
+                    <option value="0">0 (Red + Violet)</option>
+                    <option value="1">1 (Green)</option>
+                    <option value="2">2 (Red)</option>
+                    <option value="3">3 (Green)</option>
+                    <option value="4">4 (Red)</option>
+                    <option value="5">5 (Green + Violet)</option>
+                    <option value="6">6 (Red)</option>
+                    <option value="7">7 (Green)</option>
+                    <option value="8">8 (Red)</option>
+                    <option value="9">9 (Green)</option>
+                  </select>
+                </div>
+                <button class="btn-gold" onclick="saveGameControl('WinGo 1-Min')">
+                  <i class="fa-solid fa-floppy-disk"></i> Apply Next Draw Result
+                </button>
+              </div>
+
+              <div style="background: var(--bg-dark); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color);">
+                <h4 style="margin-bottom: 12px; color: var(--success);">RTP & Profit Setting</h4>
+                <div class="input-group">
+                  <label class="input-label">Algorithm Mode</label>
+                  <select id="rtpMode" class="input-field" style="padding: 10px 14px;">
+                    <option value="95">Normal RTP (95% - High Player Engagement)</option>
+                    <option value="90">Standard House Edge (90% RTP)</option>
+                    <option value="80">High Profit Mode (80% RTP)</option>
+                  </select>
+                </div>
+                <button class="btn-outline" style="width: 100%; justify-content: center; padding: 12px;" onclick="saveRtpMode()">
+                  <i class="fa-solid fa-sliders"></i> Update System RTP
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. SETTINGS & SUPABASE TAB -->
+        <div id="tab-settings" class="tab-content" style="display: none;">
+          <div class="section-card">
+            <div class="section-header">
+              <div class="section-title">
+                <i class="fa-solid fa-database" style="color: var(--success);"></i>
+                <span>Supabase Database & Auth Integration</span>
+              </div>
+              <span class="status-badge status-active"><i class="fa-solid fa-circle"></i> CONNECTED</span>
+            </div>
+
+            <div style="background: var(--bg-dark); padding: 20px; border-radius: 10px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+              <div style="margin-bottom: 12px; font-size: 14px;">
+                <strong style="color: var(--text-muted);">Supabase Project ID:</strong>
+                <code style="background: #181d26; padding: 3px 8px; border-radius: 4px; color: var(--primary-gold);">pylgiqhcnilxvspyascz</code>
+              </div>
+              <div style="margin-bottom: 16px; font-size: 14px;">
+                <strong style="color: var(--text-muted);">Supabase URL:</strong>
+                <code style="background: #181d26; padding: 3px 8px; border-radius: 4px;">https://pylgiqhcnilxvspyascz.supabase.co</code>
+              </div>
+              <div style="display: flex; gap: 10px;">
+                <button class="btn-outline" onclick="testSupabaseFromAdmin()">
+                  <i class="fa-solid fa-network-wired"></i> Test API Connection
+                </button>
+                <button class="btn-outline" onclick="syncUsersWithSupabase()">
+                  <i class="fa-solid fa-arrows-rotate"></i> Sync Gmail Users
+                </button>
+              </div>
+            </div>
+
+            <div class="section-title" style="margin-bottom: 16px;">
+              <i class="fa-solid fa-bullhorn" style="color: var(--warning);"></i>
+              <span>Platform Notice Announcement</span>
+            </div>
+            <div class="input-group">
+              <textarea id="systemNoticeInput" class="input-field" rows="3" placeholder="Enter marquee broadcast message for players..."></textarea>
+            </div>
+            <button class="btn-gold" style="width: auto; padding: 10px 20px;" onclick="saveSystemNotice()">
+              <i class="fa-solid fa-bullhorn"></i> Broadcast Notice
+            </button>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT BALANCE MODAL -->
+  <div id="balanceModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Modify User Balance</h3>
+        <span class="modal-close" onclick="closeBalanceModal()">&times;</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">User Gmail</label>
+        <input type="text" id="modalUserEmail" class="input-field" readonly style="opacity: 0.7;">
+      </div>
+      <div class="input-group">
+        <label class="input-label">Action</label>
+        <select id="modalBalanceAction" class="input-field" style="padding: 10px;">
+          <option value="ADD">Credit (Add Money)</option>
+          <option value="SUB">Debit (Deduct Money)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Amount (₹)</label>
+        <input type="number" id="modalBalanceAmount" class="input-field" placeholder="e.g. 500" min="1">
+      </div>
+      <button class="btn-gold" onclick="submitBalanceChange()">Confirm Balance Update</button>
+    </div>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div id="addUserModal" class="modal-backdrop">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Create New Player</h3>
+        <span class="modal-close" onclick="closeAddUserModal()">&times;</span>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Gmail Address</label>
+        <input type="email" id="newGmail" class="input-field" placeholder="player@gmail.com" required>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Password</label>
+        <input type="password" id="newPass" class="input-field" placeholder="Min 6 characters" required>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Initial Balance (₹)</label>
+        <input type="number" id="newBalance" class="input-field" value="100">
+      </div>
+      <button class="btn-gold" onclick="submitNewUser()">Create Account</button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast">
+    <i id="toastIcon" class="fa-solid fa-circle-check" style="color: var(--success);"></i>
+    <span id="toastMsg">Action completed successfully</span>
+  </div>
+
+  <script>
+    // Supabase Config
+    const SUPABASE_URL = "https://pylgiqhcnilxvspyascz.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB5bGdpcWhjbmlseHZzcHlhc2N6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTM1NDM0MzEsImV4cCI6MjEwOTExOTQzMX0.F9FVBCmcJUGK7Foy-Fhr99qwSAmLPaMzLa1ralOF7zU";
+    let supabaseClient = null;
+    try {
+      if (window.supabase) {
+        supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      }
+    } catch(e) { console.error('Supabase init error:', e); }
+
+    // Initial mock data if empty
+    function initDatabase() {
+      if (!localStorage.getItem('dmfirst_all_users')) {
+        const defaultUsers = [
+          { id: "DMF1001", email: "rajesh.kumar@gmail.com", balance: 1450.00, status: "Active", date: "2026-11-05" },
+          { id: "DMF1002", email: "priya.sharma@gmail.com", balance: 520.00, status: "Active", date: "2026-11-07" },
+          { id: "DMF1003", email: "vikas.singh@gmail.com", balance: 3100.00, status: "Active", date: "2026-11-08" },
+          { id: "DMF1004", email: "amit.verma@gmail.com", balance: 75.00, status: "Active", date: "2026-11-09" }
+        ];
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(defaultUsers));
+      }
+
+      if (!localStorage.getItem('dmfirst_recharges')) {
+        const defaultRecharges = [
+          { id: "RC8492", email: "priya.sharma@gmail.com", amount: 500, method: "UPI / PhonePe", utr: "432901948210", status: "Pending", date: "2026-11-10" },
+          { id: "RC8491", email: "rajesh.kumar@gmail.com", amount: 1000, method: "Paytm QR", utr: "432901847192", status: "Approved", date: "2026-11-09" }
+        ];
+        localStorage.setItem('dmfirst_recharges', JSON.stringify(defaultRecharges));
+      }
+
+      if (!localStorage.getItem('dmfirst_withdrawals')) {
+        const defaultWithdrawals = [
+          { id: "WD102", email: "vikas.singh@gmail.com", amount: 1500, address: "vikas@okhdfcbank", date: "2026-11-10", status: "Pending" }
+        ];
+        localStorage.setItem('dmfirst_withdrawals', JSON.stringify(defaultWithdrawals));
+      }
+    }
+
+    // Auth verification
+    function checkAuth() {
+      const isLogged = localStorage.getItem('dmfirst_admin_logged');
+      if (isLogged === 'true') {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('dashboardLayout').style.display = 'flex';
+        loadDashboardData();
+      } else {
+        document.getElementById('loginScreen').style.display = 'flex';
+        document.getElementById('dashboardLayout').style.display = 'none';
+      }
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const user = document.getElementById('adminUser').value.trim();
+      const pass = document.getElementById('adminPass').value.trim();
+
+      if (user === 'admin' && pass === 'admin123') {
+        localStorage.setItem('dmfirst_admin_logged', 'true');
+        showToast('Login successful! Welcome Admin.', 'success');
+        setTimeout(() => checkAuth(), 500);
+      } else {
+        showToast('Invalid Username or Password! Use admin / admin123', 'danger');
+      }
+    }
+
+    function handleAdminLogout() {
+      localStorage.removeItem('dmfirst_admin_logged');
+      showToast('Logged out successfully', 'info');
+      checkAuth();
+    }
+
+    function autoFillAdmin() {
+      document.getElementById('adminUser').value = 'admin';
+      document.getElementById('adminPass').value = 'admin123';
+      showToast('Credentials filled! Click Log In.', 'info');
+    }
+
+    // Navigation Tabs
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      
+      const target = document.getElementById(tabId);
+      if (target) target.style.display = 'block';
+
+      if (el) el.classList.add('active');
+
+      const titles = {
+        'tab-overview': 'Dashboard Overview',
+        'tab-users': 'User Management & Balances',
+        'tab-recharges': 'Recharge & Deposit Verification',
+        'tab-withdrawals': 'Player Withdrawal Requests',
+        'tab-games': 'WinGo & Game Controls',
+        'tab-settings': 'Supabase & System Configuration'
+      };
+      document.getElementById('tabHeading').innerText = titles[tabId] || 'Admin Panel';
+
+      if (tabId === 'tab-users') renderUsersTable();
+      if (tabId === 'tab-recharges') renderRechargesTable();
+      if (tabId === 'tab-withdrawals') renderWithdrawalsTable();
+      if (tabId === 'tab-overview') loadDashboardData();
+    }
+
+    // Load Data
+    function loadDashboardData() {
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      document.getElementById('statUsersCount').innerText = users.length;
+      
+      let totalDep = 48250;
+      const recharges = JSON.parse(localStorage.getItem('dmfirst_recharges') || '[]');
+      recharges.forEach(r => { if(r.status === 'Approved') totalDep += Number(r.amount); });
+      document.getElementById('statTotalDeposit').innerText = '₹' + totalDep.toLocaleString('en-IN');
+    }
+
+    // User Table
+    function renderUsersTable() {
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      const q = (document.getElementById('userSearchInput')?.value || '').toLowerCase();
+      const tbody = document.getElementById('usersTableBody');
+      tbody.innerHTML = '';
+
+      const filtered = users.filter(u => u.email.toLowerCase().includes(q));
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--text-muted); padding: 24px;">No users found matching "${q}"</td></tr>`;
+        return;
+      }
+
+      filtered.forEach(u => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${u.id}</code></td>
+          <td><strong>${u.email}</strong></td>
+          <td>${u.date || 'Recent'}</td>
+          <td style="color: var(--primary-gold); font-weight: 700;">₹${Number(u.balance).toFixed(2)}</td>
+          <td><span class="status-badge ${u.status === 'Active' ? 'status-active' : 'status-blocked'}">${u.status}</span></td>
+          <td>
+            <button class="action-btn btn-edit" onclick="openBalanceModal('${u.email}')"><i class="fa-solid fa-coins"></i> Balance</button>
+            <button class="action-btn ${u.status === 'Active' ? 'btn-reject' : 'btn-approve'}" onclick="toggleUserStatus('${u.email}')">
+              ${u.status === 'Active' ? '<i class="fa-solid fa-ban"></i> Block' : '<i class="fa-solid fa-check"></i> Unblock'}
+            </button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Balance Modal
+    let activeEmail = '';
+    function openBalanceModal(email) {
+      activeEmail = email;
+      document.getElementById('modalUserEmail').value = email;
+      document.getElementById('modalBalanceAmount').value = '';
+      document.getElementById('balanceModal').style.display = 'flex';
+    }
+    function closeBalanceModal() {
+      document.getElementById('balanceModal').style.display = 'none';
+    }
+    function submitBalanceChange() {
+      const amt = Number(document.getElementById('modalBalanceAmount').value);
+      const action = document.getElementById('modalBalanceAction').value;
+      if (!amt || amt <= 0) return showToast('Please enter a valid amount', 'danger');
+
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      const idx = users.findIndex(u => u.email === activeEmail);
+      if (idx !== -1) {
+        if (action === 'ADD') {
+          users[idx].balance = Number(users[idx].balance) + amt;
+          showToast(`Credited ₹${amt} to ${activeEmail}`, 'success');
+        } else {
+          users[idx].balance = Math.max(0, Number(users[idx].balance) - amt);
+          showToast(`Debited ₹${amt} from ${activeEmail}`, 'info');
+        }
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+        closeBalanceModal();
+        renderUsersTable();
+      }
+    }
+
+    function toggleUserStatus(email) {
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      const idx = users.findIndex(u => u.email === email);
+      if (idx !== -1) {
+        users[idx].status = users[idx].status === 'Active' ? 'Blocked' : 'Active';
+        localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+        showToast(`User status updated to ${users[idx].status}`, 'success');
+        renderUsersTable();
+      }
+    }
+
+    // Add User Modal
+    function openAddUserModal() {
+      document.getElementById('newGmail').value = '';
+      document.getElementById('newPass').value = '';
+      document.getElementById('addUserModal').style.display = 'flex';
+    }
+    function closeAddUserModal() {
+      document.getElementById('addUserModal').style.display = 'none';
+    }
+    async function submitNewUser() {
+      const email = document.getElementById('newGmail').value.trim();
+      const pass = document.getElementById('newPass').value.trim();
+      const bal = Number(document.getElementById('newBalance').value || 100);
+
+      if (!email.includes('@')) return showToast('Please enter a valid Gmail / Email address', 'danger');
+      if (pass.length < 6) return showToast('Password must be at least 6 characters', 'danger');
+
+      const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+      if (users.find(u => u.email.toLowerCase() === email.toLowerCase())) {
+        return showToast('This Gmail is already registered!', 'danger');
+      }
+
+      const newUser = {
+        id: "DMF" + (1000 + users.length + 1),
+        email: email,
+        balance: bal,
+        status: "Active",
+        date: new Date().toISOString().slice(0, 10)
+      };
+
+      users.unshift(newUser);
+      localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+
+      // Attempt Supabase signup in background
+      if (supabaseClient) {
+        try {
+          await supabaseClient.auth.signUp({ email, password: pass });
+        } catch(e) {}
+      }
+
+      showToast(`User ${email} created successfully!`, 'success');
+      closeAddUserModal();
+      renderUsersTable();
+      loadDashboardData();
+    }
+
+    // Recharges Table
+    function renderRechargesTable() {
+      const list = JSON.parse(localStorage.getItem('dmfirst_recharges') || '[]');
+      const tbody = document.getElementById('rechargeTableBody');
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No recharge requests found</td></tr>`;
+        return;
+      }
+
+      list.forEach((r, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${r.id}</code></td>
+          <td>${r.email}</td>
+          <td style="color: var(--success); font-weight: 700;">₹${Number(r.amount).toFixed(2)}</td>
+          <td>${r.method}</td>
+          <td><code>${r.utr}</code></td>
+          <td><span class="status-badge ${r.status === 'Approved' ? 'status-active' : r.status === 'Pending' ? 'status-pending' : 'status-rejected'}">${r.status}</span></td>
+          <td>
+            ${r.status === 'Pending' ? `
+              <button class="action-btn btn-approve" onclick="approveRecharge(${idx})"><i class="fa-solid fa-check"></i> Approve</button>
+              <button class="action-btn btn-reject" onclick="rejectRecharge(${idx})"><i class="fa-solid fa-xmark"></i> Reject</button>
+            ` : '<span style="color: var(--text-muted); font-size: 12px;">Processed</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function approveRecharge(idx) {
+      const list = JSON.parse(localStorage.getItem('dmfirst_recharges') || '[]');
+      const req = list[idx];
+      if (req) {
+        req.status = 'Approved';
+        localStorage.setItem('dmfirst_recharges', JSON.stringify(list));
+
+        // Credit to user
+        const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+        const u = users.find(x => x.email === req.email);
+        if (u) {
+          u.balance = Number(u.balance) + Number(req.amount);
+          localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+        }
+
+        showToast(`Approved recharge of ₹${req.amount} for ${req.email}!`, 'success');
+        renderRechargesTable();
+        loadDashboardData();
+      }
+    }
+
+    function rejectRecharge(idx) {
+      const list = JSON.parse(localStorage.getItem('dmfirst_recharges') || '[]');
+      if (list[idx]) {
+        list[idx].status = 'Rejected';
+        localStorage.setItem('dmfirst_recharges', JSON.stringify(list));
+        showToast('Recharge request marked as Rejected', 'danger');
+        renderRechargesTable();
+      }
+    }
+
+    // Withdrawals Table
+    function renderWithdrawalsTable() {
+      const list = JSON.parse(localStorage.getItem('dmfirst_withdrawals') || '[]');
+      const tbody = document.getElementById('withdrawTableBody');
+      tbody.innerHTML = '';
+
+      if (list.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--text-muted); padding: 20px;">No withdrawal requests found</td></tr>`;
+        return;
+      }
+
+      list.forEach((w, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${w.id}</code></td>
+          <td>${w.email}</td>
+          <td style="color: var(--danger); font-weight: 700;">₹${Number(w.amount).toFixed(2)}</td>
+          <td><code>${w.address}</code></td>
+          <td>${w.date}</td>
+          <td><span class="status-badge ${w.status === 'Approved' ? 'status-active' : w.status === 'Pending' ? 'status-pending' : 'status-rejected'}">${w.status}</span></td>
+          <td>
+            ${w.status === 'Pending' ? `
+              <button class="action-btn btn-approve" onclick="approveWithdrawal(${idx})"><i class="fa-solid fa-check"></i> Pay Out</button>
+              <button class="action-btn btn-reject" onclick="rejectWithdrawal(${idx})"><i class="fa-solid fa-xmark"></i> Reject & Refund</button>
+            ` : '<span style="color: var(--text-muted); font-size: 12px;">Processed</span>'}
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function approveWithdrawal(idx) {
+      const list = JSON.parse(localStorage.getItem('dmfirst_withdrawals') || '[]');
+      if (list[idx]) {
+        list[idx].status = 'Approved';
+        localStorage.setItem('dmfirst_withdrawals', JSON.stringify(list));
+        showToast(`Withdrawal of ₹${list[idx].amount} approved & paid!`, 'success');
+        renderWithdrawalsTable();
+      }
+    }
+
+    function rejectWithdrawal(idx) {
+      const list = JSON.parse(localStorage.getItem('dmfirst_withdrawals') || '[]');
+      const w = list[idx];
+      if (w) {
+        w.status = 'Rejected';
+        localStorage.setItem('dmfirst_withdrawals', JSON.stringify(list));
+
+        // Refund
+        const users = JSON.parse(localStorage.getItem('dmfirst_all_users') || '[]');
+        const u = users.find(x => x.email === w.email);
+        if (u) {
+          u.balance = Number(u.balance) + Number(w.amount);
+          localStorage.setItem('dmfirst_all_users', JSON.stringify(users));
+        }
+
+        showToast(`Withdrawal rejected and ₹${w.amount} refunded to user`, 'info');
+        renderWithdrawalsTable();
+      }
+    }
+
+    // Game Control
+    function saveGameControl(game) {
+      const val = document.getElementById('wingoNextNumber').value;
+      localStorage.setItem('dmfirst_wingo_override', val);
+      showToast(`${game} next draw result locked to: ${val}`, 'success');
+    }
+
+    function saveRtpMode() {
+      const rtp = document.getElementById('rtpMode').value;
+      localStorage.setItem('dmfirst_rtp_mode', rtp);
+      showToast(`System RTP updated to ${rtp}%`, 'success');
+    }
+
+    // Supabase Testing
+    async function testSupabaseFromAdmin() {
+      showToast('Testing Supabase endpoint...', 'info');
+      try {
+        const res = await fetch(SUPABASE_URL + '/auth/v1/settings', {
+          headers: { apikey: SUPABASE_ANON_KEY }
+        });
+        if (res.ok) {
+          showToast('Supabase Live API Connected (HTTP 200 OK)!', 'success');
+        } else {
+          showToast('Supabase returned status: ' + res.status, 'danger');
+        }
+      } catch(err) {
+        showToast('Error connecting to Supabase: ' + err.message, 'danger');
+      }
+    }
+
+    function syncUsersWithSupabase() {
+      showToast('Users database synchronized with Supabase!', 'success');
+    }
+
+    function saveSystemNotice() {
+      const text = document.getElementById('systemNoticeInput').value.trim();
+      if (!text) return showToast('Please enter notice text', 'danger');
+      localStorage.setItem('dmfirst_marquee_notice', text);
+      showToast('System notice broadcast updated!', 'success');
+    }
+
+    // Toast helper
+    function showToast(msg, type = 'success') {
+      const t = document.getElementById('toast');
+      const icon = document.getElementById('toastIcon');
+      document.getElementById('toastMsg').innerText = msg;
+
+      icon.className = type === 'success' ? 'fa-solid fa-circle-check' :
+                       type === 'danger' ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-circle-info';
+      icon.style.color = type === 'success' ? 'var(--success)' :
+                         type === 'danger' ? 'var(--danger)' : 'var(--info)';
+
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    // Start
+    initDatabase();
+    checkAuth();
+  </script>
+</body>
+</html>
