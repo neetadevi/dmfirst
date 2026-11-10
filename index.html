@@ -23,9 +23,35 @@
 		<script>window.CONFIG=Object.freeze({"VITE_API_URL":"https://api.dmfirst9api.com","VITE_BASE_LANGUAGE":"en","VITE_BASE_PROJECTNAME":"ar103","VITE_HOME":"public9Home","VITE_MAINCOLOR":"public9GreenGold","VITE_GTAG_ID":"","BASE_URL":"/dmfirst/","MODE":"production","DEV":true,"PROD":false,"tenant":"ar103"});</script>
 		<script src="/dmfirst/web/config"></script>
 			<style>
-			/* Hide top bar login and register buttons */
-			.purple-home__nav-auth, .purple-home__nav-auth__login, .purple-home__nav-auth__register { display: none !important; }
+			.purple-home__nav-auth {
+				display: flex !important;
+				align-items: center !important;
+				gap: 8px !important;
+			}
+			.purple-home__nav-auth button {
+				padding: 5px 12px !important;
+				border-radius: 8px !important;
+				font-size: 13px !important;
+				font-weight: 700 !important;
+				cursor: pointer !important;
+				border: none !important;
+				display: inline-flex !important;
+				align-items: center !important;
+				justify-content: center !important;
+				white-space: nowrap !important;
+			}
+			.purple-home__nav-auth__login {
+				background: linear-gradient(135deg, #00c087 0%, #088538 100%) !important;
+				color: #ffffff !important;
+				box-shadow: 0 2px 8px rgba(0, 192, 135, 0.4) !important;
+			}
+			.purple-home__nav-auth__register {
+				background: linear-gradient(135deg, #ffd370 0%, #f5a623 100%) !important;
+				color: #111111 !important;
+				box-shadow: 0 2px 8px rgba(245, 166, 35, 0.4) !important;
+			}
 		</style>
+		<script src="/dmfirst/assets/js/rai08_auth.js"></script>
 	</head>
 
 	<body>
