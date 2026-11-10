@@ -1,0 +1,1 @@
+import{_ as e,E as n,F as a}from"./index-DOzeTQwq.js";const i={};function c(r,s){return n(),a("div")}const o=e(i,[["render",c],["__file","/home/jenkins/agent/workspace/AR095-Pages-india-yaarwin/h5/src/views/main/PointDetail/index.vue"]]);export{o as default};
